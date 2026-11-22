@@ -51,14 +51,44 @@ const ico = (n, s = 20) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" 
 
 /* ------------------------------------------------------------------
    LIENS EXTERNES — à remplacer par vos vraies pages officielles
-   (les valeurs ci-dessous proviennent des maquettes : @metanoia)
    ------------------------------------------------------------------ */
 const LINKS = {
   facebook:  'https://www.facebook.com/metanoia',
   instagram: 'https://www.instagram.com/metanoia',
   tiktok:    'https://www.tiktok.com/@metanoia',
-  brochure:  '' // ex: './plaquette-cam.pdf' ou un lien web
+  brochure:  ''
 };
+
+/* ------------------------------------------------------------------
+   VIDÉOS YOUTUBE — COLLEZ VOS LIENS ICI
+   ------------------------------------------------------------------
+   Pour ajouter un message :
+   1. Copiez le lien YouTube (ex: https://www.youtube.com/watch?v=AbCdEf123)
+   2. Remplacez la valeur "url: ''" par votre lien
+   3. Renseignez le titre, le prédicateur et la date
+   Les vignettes et le lecteur se génèrent automatiquement.
+   ------------------------------------------------------------------ */
+
+// La prédication en vedette (premier écran)
+const FEATURED_VIDEO = {
+  t: 'De gloire en gloire',
+  url: '',                       // ← collez le lien YouTube ici
+  pasteur: 'Pasteur [Nom]',
+  date: '13 déc. 2026',
+  duree: '52 min',
+  cat: 'Cultes',
+  desc: '[Résumé de la prédication et références bibliques citées pendant le message.]'
+};
+
+// Extrait l'ID YouTube depuis n'importe quel format de lien
+function ytId(u) {
+  if (!u) return '';
+  const m = String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+function ytThumb(id) { return 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg'; }
+function ytEmbed(id) { return 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0&modestbranding=1'; }
+function ytWatch(id) { return 'https://www.youtube.com/watch?v=' + id; }
 
 /* ---------------- État ---------------- */
 
@@ -406,21 +436,32 @@ screens.event = () => `
   </div>`;
 
 const SERMONS = [
-  { t: 'Le renouvellement de l’intelligence', d: 'Pasteur [Nom] · 6 déc. 2026', type: 'Audio', cat: 'Enseignements', cls: 'sermon__thumb--r', mark: 'α' },
-  { t: 'Contempler Christ', d: 'Pasteur [Nom] · 29 nov. 2026', type: 'Vidéo', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α' },
-  { t: 'Une génération transformée', d: 'Pasteur [Nom] · 22 nov. 2026', type: 'Vidéo', cat: 'Enseignements', cls: 'sermon__thumb--a', mark: 'α' },
-  { t: 'Manifester sa gloire', d: 'Pasteur [Nom] · 15 nov. 2026', type: 'Audio', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α' }
+  { t: 'Le renouvellement de l’intelligence', d: 'Pasteur [Nom] · 6 déc. 2026', type: 'Audio', cat: 'Enseignements', cls: 'sermon__thumb--r', mark: 'α', url: '' },
+  { t: 'Contempler Christ', d: 'Pasteur [Nom] · 29 nov. 2026', type: 'Vidéo', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α', url: '' },
+  { t: 'Une génération transformée', d: 'Pasteur [Nom] · 22 nov. 2026', type: 'Vidéo', cat: 'Enseignements', cls: 'sermon__thumb--a', mark: 'α', url: '' },
+  { t: 'Manifester sa gloire', d: 'Pasteur [Nom] · 15 nov. 2026', type: 'Audio', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α', url: '' }
 ];
+
+// Le sermon sélectionné pour le lecteur : -1 = vedette, sinon index dans SERMONS
+state.currentSermon = -1;
+
+function selectedVideo() {
+  return state.currentSermon === -1
+    ? FEATURED_VIDEO
+    : SERMONS[state.currentSermon] || FEATURED_VIDEO;
+}
 
 screens.predications = () => `
   <div class="screen">
     ${header('Prédications', { back: false, search: true })}
     ${chips('sermons', ['Toutes', 'Vidéo', 'Audio', 'Cultes', 'Enseignements'])}
-    <div class="featured stagger" data-action="nav" data-id="lecteur">
-      <div class="featured__art"></div>
+    <div class="featured stagger" data-action="open-video" data-i="-1">
+      ${ytId(FEATURED_VIDEO.url)
+        ? `<div class="featured__art" style="background:url('${ytThumb(ytId(FEATURED_VIDEO.url))}') center/cover"></div>`
+        : `<div class="featured__art"></div>`}
       <div class="featured__body">
         <span class="featured__badge">DERNIÈRE PRÉDICATION</span>
-        <div><div class="featured__title">De gloire en gloire</div><div class="featured__meta">Pasteur [Nom] · 13 déc. 2026 · Vidéo · 52 min</div></div>
+        <div><div class="featured__title">${FEATURED_VIDEO.t}</div><div class="featured__meta">${FEATURED_VIDEO.pasteur} · ${FEATURED_VIDEO.date} · Vidéo · ${FEATURED_VIDEO.duree}</div></div>
       </div>
       <div class="featured__play">${ico('play', 22)}</div>
     </div>
@@ -429,39 +470,55 @@ screens.predications = () => `
       ${SERMONS.filter(s => {
         const f = state.tabs.sermons;
         return f === 'Toutes' || s.type === f || s.cat === f;
-      }).map(s => `<div class="sermon" data-action="nav" data-id="lecteur">
-          <div class="sermon__thumb ${s.cls}"><span>${s.mark}</span><i>${s.type.toUpperCase()}</i></div>
+      }).map((s, i) => {
+        const idx = SERMONS.indexOf(s);
+        const id = ytId(s.url);
+        return `<div class="sermon" data-action="open-video" data-i="${idx}">
+          <div class="sermon__thumb ${s.cls}" ${id ? `style="background:url('${ytThumb(id)}') center/cover"` : ''}>${id ? '' : `<span>${s.mark}</span>`}<i>${s.type.toUpperCase()}</i></div>
           <div class="sermon__b"><b>${s.t}</b><small>${s.d}</small></div>
           ${ico('right',16)}
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>
   </div>`;
 
-screens.lecteur = () => `
+screens.lecteur = () => {
+  const v = selectedVideo();
+  const id = ytId(v.url);
+  return `
   <div class="screen">
     ${header('Lecture', { back: true })}
-    <div class="player-art stagger">
-      <button class="player-art__play" data-action="play">${ico('play', 28)}</button>
-    </div>
-    <div class="player-toggle">
-      <button class="active" data-action="toast" data-msg="Mode vidéo activé">Vidéo</button>
-      <button data-action="toast" data-msg="Mode audio activé">Audio seul</button>
-    </div>
-    <h2 class="h2" style="font-size:19px">De gloire en gloire</h2>
-    <p class="tiny muted" style="margin:6px 0 18px">Pasteur [Nom] · Culte du 13 décembre 2026</p>
-    <p class="body" style="margin:0 0 20px">[Résumé de la prédication et références bibliques citées pendant le message.]</p>
-    <div class="progress"><i id="playerBar"></i></div>
-    <div class="progress-labels"><span>18:24</span><span>52:10</span></div>
-    <div class="player-controls">
-      <button data-action="toast" data-msg="Prédication précédente">${ico('prev',20)}</button>
-      <button class="main" data-action="play" id="mainPlay">${ico('play',24)}</button>
-      <button data-action="toast" data-msg="Prédication suivante">${ico('next',20)}</button>
-    </div>
+    ${id
+      ? `<div class="yt-player stagger">
+           <iframe src="${ytEmbed(id)}" title="${v.t}" frameborder="0"
+             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+             allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+         </div>`
+      : `<div class="player-art stagger">
+           <button class="player-art__play" data-action="toast" data-msg="Collez un lien YouTube dans FEATURED_VIDEO.url (app.js)">${ico('play', 28)}</button>
+         </div>
+         <div class="card stagger" style="margin-top:14px;border-left:3px solid var(--red)">
+           <b style="font-size:12px">Aucune vidéo configurée</b>
+           <p class="tiny muted" style="margin:6px 0 0">Collez le lien YouTube dans <code>FEATURED_VIDEO.url</code> ou dans le champ <code>url</code> d'une prédication, en haut de <code>app.js</code>.</p>
+         </div>`}
+    <h2 class="h2" style="font-size:19px;margin-top:18px">${v.t}</h2>
+    <p class="tiny muted" style="margin:6px 0 12px">${v.pasteur || ''} · ${v.date || ''}${v.duree ? ' · ' + v.duree : ''}</p>
+    ${id ? `<a class="btn btn--outline" style="margin-bottom:16px;text-decoration:none" href="${ytWatch(id)}" target="_blank" rel="noopener">${ico('globe',17)} Ouvrir sur YouTube</a>` : ''}
+    <p class="body" style="margin:0 0 20px">${v.desc || '[Résumé de la prédication et références bibliques citées pendant le message.]'}</p>
     <div class="section-head"><h3>À écouter ensuite</h3></div>
     <div class="card stagger">
-      ${SERMONS.slice(0,2).map(s => `<div class="sermon"><div class="sermon__thumb ${s.cls}"><span>α</span><i>${s.type.toUpperCase()}</i></div><div class="sermon__b"><b>${s.t}</b><small>${s.d}</small></div></div>`).join('')}
+      ${SERMONS.slice(0,3).map(s => {
+        const idx = SERMONS.indexOf(s);
+        const sid = ytId(s.url);
+        return `<div class="sermon" data-action="open-video" data-i="${idx}">
+          <div class="sermon__thumb ${s.cls}" ${sid ? `style="background:url('${ytThumb(sid)}') center/cover"` : ''}>${sid ? '' : `<span>${s.mark}</span>`}<i>${s.type.toUpperCase()}</i></div>
+          <div class="sermon__b"><b>${s.t}</b><small>${s.d}</small></div>
+          ${ico('right',16)}
+        </div>`;
+      }).join('')}
     </div>
   </div>`;
+};
 
 screens.priere = () => {
   const tab = state.tabs.prayer;
@@ -842,6 +899,10 @@ document.addEventListener('click', e => {
 
   switch (a) {
     case 'nav': navigate(el.dataset.id); break;
+    case 'open-video':
+      state.currentSermon = +el.dataset.i;
+      navigate('lecteur');
+      break;
     case 'back': goBack(); break;
     case 'tab': navigate(el.dataset.id, { replace: true }); break;
     case 'toast': toast(el.dataset.msg); break;

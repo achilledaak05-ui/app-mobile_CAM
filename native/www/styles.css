@@ -827,3 +827,23 @@ html, body { height: 100%; overflow: hidden; background: var(--bg-0); }
 /* Connexion : champs placés plus bas (inscription inchangée) */
 .auth--login .auth__logo { margin: 26px 0 46px; }
 .auth--login .auth__intro { margin-bottom: 62px; }
+
+/* Œil intégré dans le champ mot de passe */
+.input--with-eye { padding-right: 52px !important; }
+.eye-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--violet-soft);
+  background: rgba(106, 64, 196, .12);
+  border: 1px solid var(--glass-line);
+  transition: all .25s var(--ease);
+}
+.eye-btn:hover { background: rgba(106, 64, 196, .25); color: #fff; }
+.eye-btn:active { transform: translateY(-50%) scale(.9); }

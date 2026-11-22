@@ -212,8 +212,8 @@ screens.login = () => `
       <label>Mot de passe</label>
       <div class="input-ico" style="position:relative">
         ${ico('lock', 17)}
-        <input class="input" id="loginPass" type="${state.showPassword ? 'text' : 'password'}" placeholder="••••••••" style="padding-right:48px" autocomplete="current-password" />
-        <button data-action="eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#A8A2B4">${ico(state.showPassword ? 'eyeoff' : 'eye', 18)}</button>
+        <input class="input input--with-eye" id="loginPass" type="${state.showPassword ? 'text' : 'password'}" placeholder="••••••••" autocomplete="current-password" />
+        <button class="eye-btn" data-action="eye" aria-label="${state.showPassword ? 'Masquer' : 'Afficher'} le mot de passe">${ico(state.showPassword ? 'eyeoff' : 'eye', 18)}</button>
       </div>
       <button class="auth__forgot" data-action="toast" data-msg="Contactez le secrétariat de l'église pour réinitialiser votre mot de passe">Mot de passe oublié ?</button>
     </div>
