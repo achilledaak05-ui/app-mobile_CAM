@@ -867,3 +867,6 @@ html, body { height: 100%; overflow: hidden; background: var(--bg-0); }
   border: 0;
   display: block;
 }
+
+/* Badge « en direct » sur les cultes */
+.sermon__thumb i.live { background: linear-gradient(135deg,#F01220,#A80416); color: #fff; letter-spacing: .04em; box-shadow: 0 0 10px rgba(227,6,19,.7); }

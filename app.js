@@ -76,7 +76,7 @@ const FEATURED_VIDEO = {
   pasteur: 'Pasteur [Nom]',
   date: '13 déc. 2026',
   duree: '52 min',
-  cat: 'Cultes',
+  cat: 'Cultes en direct',
   desc: '[Résumé de la prédication et références bibliques citées pendant le message.]'
 };
 
@@ -436,10 +436,13 @@ screens.event = () => `
   </div>`;
 
 const SERMONS = [
-  { t: 'Le renouvellement de l’intelligence', d: 'Pasteur [Nom] · 6 déc. 2026', type: 'Audio', cat: 'Enseignements', cls: 'sermon__thumb--r', mark: 'α', url: '' },
-  { t: 'Contempler Christ', d: 'Pasteur [Nom] · 29 nov. 2026', type: 'Vidéo', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α', url: '' },
-  { t: 'Une génération transformée', d: 'Pasteur [Nom] · 22 nov. 2026', type: 'Vidéo', cat: 'Enseignements', cls: 'sermon__thumb--a', mark: 'α', url: '' },
-  { t: 'Manifester sa gloire', d: 'Pasteur [Nom] · 15 nov. 2026', type: 'Audio', cat: 'Cultes', cls: 'sermon__thumb--v', mark: 'α', url: '' }
+  { t: 'Culte du dimanche — En direct', d: 'Culte en direct · 13 déc. 2026', type: 'Vidéo', cat: 'Cultes en direct', live: true, cls: 'sermon__thumb--r', mark: 'α', url: '' },
+  { t: 'Le renouvellement de l’intelligence', d: 'Pasteur [Nom] · 6 déc. 2026', type: 'Audio', cat: 'Enseignements bibliques', cls: 'sermon__thumb--v', mark: 'α', url: '' },
+  { t: 'Une génération transformée', d: 'Pasteur [Nom] · 22 nov. 2026', type: 'Vidéo', cat: 'Enseignements bibliques', cls: 'sermon__thumb--a', mark: 'α', url: '' },
+  { t: 'Contempler Christ', d: 'Louange · 29 nov. 2026', type: 'Vidéo', cat: 'Louanges et adorations', cls: 'sermon__thumb--v', mark: 'α', url: '' },
+  { t: 'Manifester sa gloire', d: 'Adoration · 15 nov. 2026', type: 'Audio', cat: 'Louanges et adorations', cls: 'sermon__thumb--r', mark: 'α', url: '' },
+  { t: 'Formation des ouvriers', d: 'Équipe · 29 nov. 2026', type: 'Vidéo', cat: 'Formations', cls: 'sermon__thumb--a', mark: 'α', url: '' },
+  { t: 'Culte d’ouverture', d: 'Programme spécial · 13 déc. 2026', type: 'Vidéo', cat: 'Conférences et événements', cls: 'sermon__thumb--v', mark: 'α', url: '' }
 ];
 
 // Le sermon sélectionné pour le lecteur : -1 = vedette, sinon index dans SERMONS
@@ -454,7 +457,7 @@ function selectedVideo() {
 screens.predications = () => `
   <div class="screen">
     ${header('Prédications', { back: false, search: true })}
-    ${chips('sermons', ['Toutes', 'Vidéo', 'Audio', 'Cultes', 'Enseignements'])}
+    ${chips('sermons', ['Toutes', 'Enseignements bibliques', 'Cultes en direct', 'Louanges et adorations', 'Formations', 'Conférences et événements'])}
     <div class="featured stagger" data-action="open-video" data-i="-1">
       ${ytId(FEATURED_VIDEO.url)
         ? `<div class="featured__art" style="background:url('${ytThumb(ytId(FEATURED_VIDEO.url))}') center/cover"></div>`
@@ -465,7 +468,12 @@ screens.predications = () => `
       </div>
       <div class="featured__play">${ico('play', 22)}</div>
     </div>
-    <div class="section-head"><h3>Toutes les prédications</h3><button data-action="toast" data-msg="Toutes les prédications">Voir tout ${ico('right',13)}</button></div>
+    ${state.tabs.sermons === 'Cultes en direct' ? `
+      <div class="card stagger" style="border-left:3px solid var(--red)">
+        <b style="font-size:12px">Cultes en direct</b>
+        <p class="tiny muted" style="margin:6px 0 0">Les cultes sont diffusés ici lorsqu'un lien YouTube est disponible. Collez le lien de votre diffusion dans le champ <code>url</code> de la catégorie « Cultes en direct » dans <code>app.js</code>.</p>
+      </div>` : ''}
+    <div class="section-head"><h3>${state.tabs.sermons === 'Toutes' ? 'Toutes les prédications' : state.tabs.sermons}</h3><button data-action="toast" data-msg="Toutes les prédications">Voir tout ${ico('right',13)}</button></div>
     <div class="card stagger">
       ${SERMONS.filter(s => {
         const f = state.tabs.sermons;
@@ -474,7 +482,7 @@ screens.predications = () => `
         const idx = SERMONS.indexOf(s);
         const id = ytId(s.url);
         return `<div class="sermon" data-action="open-video" data-i="${idx}">
-          <div class="sermon__thumb ${s.cls}" ${id ? `style="background:url('${ytThumb(id)}') center/cover"` : ''}>${id ? '' : `<span>${s.mark}</span>`}<i>${s.type.toUpperCase()}</i></div>
+          <div class="sermon__thumb ${s.cls}" ${id ? `style="background:url('${ytThumb(id)}') center/cover"` : ''}>${id ? '' : `<span>${s.mark}</span>`}<i class="${s.live ? 'live' : ''}">${s.live ? '● DIRECT' : s.type.toUpperCase()}</i></div>
           <div class="sermon__b"><b>${s.t}</b><small>${s.d}</small></div>
           ${ico('right',16)}
         </div>`;
@@ -511,7 +519,7 @@ screens.lecteur = () => {
         const idx = SERMONS.indexOf(s);
         const sid = ytId(s.url);
         return `<div class="sermon" data-action="open-video" data-i="${idx}">
-          <div class="sermon__thumb ${s.cls}" ${sid ? `style="background:url('${ytThumb(sid)}') center/cover"` : ''}>${sid ? '' : `<span>${s.mark}</span>`}<i>${s.type.toUpperCase()}</i></div>
+          <div class="sermon__thumb ${s.cls}" ${sid ? `style="background:url('${ytThumb(sid)}') center/cover"` : ''}>${sid ? '' : `<span>${s.mark}</span>`}<i class="${s.live ? 'live' : ''}">${s.live ? '● DIRECT' : s.type.toUpperCase()}</i></div>
           <div class="sermon__b"><b>${s.t}</b><small>${s.d}</small></div>
           ${ico('right',16)}
         </div>`;
