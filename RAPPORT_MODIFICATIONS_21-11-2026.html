@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>METANOÏA — Débrief technique · 21 novembre 2026</title>
+<style>
+  :root{
+    --violet:#6A40C4; --violet-deep:#321A63; --violet-soft:#B9A2EB;
+    --red:#E30613; --red-deep:#A80416; --lavender:#EEE8FA; --anthracite:#242424;
+    --bg:#0C0619; --bg2:#150A2C; --line:rgba(185,162,235,.16);
+    --text:#fff; --muted:rgba(255,255,255,.55);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Avenir Next",Avenir,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);
+    background:radial-gradient(circle at 12% 6%,rgba(106,64,196,.28),transparent 38%),
+               radial-gradient(circle at 92% 92%,rgba(227,6,19,.10),transparent 42%),
+               linear-gradient(150deg,#0A0516,#1A0D34 55%,#070312);
+    min-height:100vh;padding:54px 22px 90px;line-height:1.6}
+  .wrap{max-width:880px;margin:0 auto}
+  .eyebrow{font-size:10px;letter-spacing:.28em;font-weight:800;color:var(--violet-soft);text-transform:uppercase}
+  .top{display:flex;align-items:center;gap:16px;margin-bottom:10px}
+  .alpha{font-family:Georgia,serif;font-size:58px;color:var(--red);line-height:1;text-shadow:0 0 36px rgba(227,6,19,.5)}
+  h1{font-family:Georgia,serif;font-size:clamp(26px,4vw,40px);margin:6px 0 4px;letter-spacing:.02em}
+  .sub{color:var(--violet-soft);font-size:13px;letter-spacing:.05em}
+  .date{display:inline-block;margin-top:18px;padding:7px 13px;border-radius:999px;background:rgba(106,64,196,.18);
+    border:1px solid var(--line);font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--violet-soft)}
+  .hero{background:linear-gradient(140deg,rgba(106,64,196,.22),rgba(21,10,44,.5));border:1px solid var(--line);
+    border-radius:24px;padding:26px 28px;margin:28px 0 38px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  .hero p{margin:8px 0 0;color:rgba(255,255,255,.78);font-size:14px}
+  .hero code{background:rgba(255,255,255,.08);padding:2px 7px;border-radius:6px;font-size:12px;color:var(--violet-soft)}
+  h2{font-size:19px;margin:38px 0 14px;display:flex;align-items:center;gap:12px}
+  h2 .num{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--red),var(--red-deep));
+    display:grid;place-items:center;font-size:13px;flex:none;box-shadow:0 6px 16px rgba(227,6,19,.35)}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);
+    border-radius:18px;padding:22px 24px;margin-bottom:14px;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+  .card h3{margin:0 0 12px;font-size:14px;color:var(--violet-soft);letter-spacing:.02em}
+  p{margin:0 0 12px;font-size:13.5px;color:rgba(255,255,255,.82)}
+  ul{margin:10px 0 0;padding-left:20px}
+  li{font-size:13px;color:rgba(255,255,255,.78);margin-bottom:7px}
+  pre{background:rgba(0,0,0,.38);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;
+    font-size:12px;line-height:1.6;color:#DCD2F2;margin:12px 0}
+  .tag{display:inline-block;padding:4px 9px;border-radius:8px;font-size:9px;font-weight:800;letter-spacing:.1em;
+    background:rgba(106,64,196,.22);color:var(--violet-soft);border:1px solid var(--line);margin-right:6px}
+  .tag.ok{background:rgba(227,6,19,.16);color:#FF7A72;border-color:rgba(227,6,19,.3)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--violet-soft);font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+  td:last-child{color:#7BE0A8;font-weight:700}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stat{background:linear-gradient(140deg,rgba(106,64,196,.2),rgba(21,10,44,.4));border:1px solid var(--line);
+    border-radius:16px;padding:18px}
+  .stat b{display:block;font-size:28px;color:#fff;line-height:1}
+  .stat span{font-size:10px;color:var(--violet-soft);letter-spacing:.1em;font-weight:700}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  a.btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;padding:12px 18px;border-radius:13px;
+    font-size:12px;font-weight:700;background:linear-gradient(135deg,#7C51D6,#5A32A8);color:#fff;
+    box-shadow:0 10px 22px rgba(106,64,196,.38)}
+  a.btn.red{background:linear-gradient(135deg,#F01220,#A80416);box-shadow:0 10px 22px rgba(227,6,19,.35)}
+  .foot{text-align:center;color:rgba(255,255,255,.3);font-size:10px;letter-spacing:.18em;margin-top:50px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}body{padding:28px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="alpha">α</div>
+    <div>
+      <div class="eyebrow">Centre Apostolique METANOÏA</div>
+      <h1>Application mobile — Retours développement</h1>
+      <div class="sub">Débrief technique · Édition Premium Noir &amp; Violet</div>
+    </div>
+  </div>
+  <div class="date">21 NOVEMBRE 2026 · AVANT MISE SUR GITHUB</div>
+
+  <div class="hero">
+    <span class="tag">COMMIT 50f095a</span><span class="tag">PARENT fc92291</span>
+    <p>Travail réalisé avant le push sur GitHub. <strong>3 fichiers modifiés</strong> — 129 lignes ajoutées, 14 retirées. La différence complète est conservée dans <code>modifications_21-11-2026.patch</code> (287 lignes).</p>
+    <div class="grid" style="margin-top:18px">
+      <div class="stat"><b>4</b><span>FONCTIONNALITÉS LIVRÉES</span></div>
+      <div class="stat"><b>12/12</b><span>TESTS AUTOMATISÉS RÉUSSIS</span></div>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span> Inscription — formulaire utilisateur</h2>
+  <div class="card">
+    <h3>Fichier : app.js · fonction screens.register()</h3>
+    <pre>&lt;!-- AVANT --&gt;
+&lt;div class="field"&gt;&lt;label&gt;Nom et prénom&lt;/label&gt;&lt;input placeholder="Esther Kouassi" /&gt;&lt;/div&gt;
+
+&lt;!-- APRÈS --&gt;
+&lt;div class="field"&gt;&lt;label&gt;Nom&lt;/label&gt;&lt;input placeholder="Kouassi" autocomplete="family-name" /&gt;&lt;/div&gt;
+&lt;div class="field"&gt;&lt;label&gt;Prénoms&lt;/label&gt;&lt;input placeholder="Esther Akoua" autocomplete="given-name" /&gt;&lt;/div&gt;</pre>
+    <p>Deux champs distincts + attributs <code>autocomplete</code> pour une gestion des profils et un remplissage automatique facilités sur mobile.</p>
+  </div>
+
+  <h2><span class="num">2</span> Prière — animation et série</h2>
+  <div class="card">
+    <h3>Fichiers : app.js · styles.css</h3>
+    <ul>
+      <li>Icône <strong>flame</strong> (SVG) ajoutée au registre <code>I</code>.</li>
+      <li>État global : <code>streak: { prie: 12, medite: 8 }</code>.</li>
+      <li>Cartes identifiées <code>#track-prie</code> / <code>#track-medite</code> avec badge « 🔥 12 jours consécutifs ».</li>
+      <li>Fonction <code>fireAnimation(q)</code> : 16 particules de flammes (positions, délais et tailles aléatoires) + classe <code>fire-active</code>, nettoyage du DOM après 1,6 s.</li>
+      <li>Handler <code>yesno</code> : mémorise la valeur précédente, incrémente la série <strong>une seule fois par jour</strong>, déclenche l'animation via <code>requestAnimationFrame</code>, affiche « Série de 13 jours de prière ! ».</li>
+    </ul>
+    <p>CSS ajouté : <code>.streak-badge</code>, <code>.track-card.fire-active</code>, <code>fireGlow</code>, <code>.fire-layer i</code>, <code>fireRise</code>. Halo et flammes en rouge <code>#E30613</code> et dérivés, conformes à la charte.</p>
+  </div>
+
+  <h2><span class="num">3</span> Méditation — animation et série</h2>
+  <div class="card">
+    <h3>Fichiers : app.js · styles.css</h3>
+    <ul>
+      <li>Même implémentation appliquée à <code>data-q="medite"</code>.</li>
+      <li>Carte <code>#track-medite</code>, badge « 8 jours consécutifs ».</li>
+      <li>Même <code>fireAnimation()</code>, même logique d'incrémentation, toast « Série de 9 jours de méditation ! ».</li>
+    </ul>
+    <p>Cohérence visuelle et fonctionnelle totale entre prière et méditation.</p>
+  </div>
+
+  <h2><span class="num">4</span> Mur des témoignages</h2>
+  <div class="card">
+    <h3>Fichier : app.js</h3>
+    <ul>
+      <li>Nouveau tableau <code>testimonies</code> (3 témoignages d'exemple : Nadège C., Koffi B., Aminata M.).</li>
+      <li>Nouveau tableau <code>celebrated: []</code> pour ne pas confondre les « Amen » avec les prières (<code>joined</code>).</li>
+      <li>4ᵉ onglet : <code>['War Room', 'Exaucements', 'Mur de prière', 'Mur des témoignages']</code>.</li>
+      <li>Même interface <code>.wall-post</code>, compteur « X personnes célèbrent avec vous », bouton « Amen, je célèbre ! ».</li>
+      <li>Nouvelle feuille <code>newTestimony</code> → action <code>save-testimony</code> : ajout en tête de liste avec initiales et heure « À l'instant ».</li>
+    </ul>
+    <p>Objectif : un espace de partage et d'édification visible par <strong>tous les membres</strong>.</p>
+  </div>
+
+  <h2><span class="num">✓</span> Vérifications</h2>
+  <div class="card">
+    <table>
+      <tr><th>Test</th><th>Résultat</th></tr>
+      <tr><td>Champs Nom / Prénoms présents</td><td>✅ PASS</td></tr>
+      <tr><td>Cartes #track-prie / #track-medite présentes</td><td>✅ PASS</td></tr>
+      <tr><td>Séries initiales (12 / 8)</td><td>✅ PASS</td></tr>
+      <tr><td>Incrément après prière (13)</td><td>✅ PASS</td></tr>
+      <tr><td>Particules de feu créées (prière)</td><td>✅ PASS</td></tr>
+      <tr><td>Incrément après méditation (9)</td><td>✅ PASS</td></tr>
+      <tr><td>Particules de feu créées (méditation)</td><td>✅ PASS</td></tr>
+      <tr><td>Pas de double incrément le même jour</td><td>✅ PASS</td></tr>
+      <tr><td>Onglet « Mur des témoignages » présent</td><td>✅ PASS</td></tr>
+      <tr><td>Champ de publication présent</td><td>✅ PASS</td></tr>
+      <tr><td>3 témoignages visibles</td><td>✅ PASS</td></tr>
+      <tr><td>Ajout d'un nouveau témoignage</td><td>✅ PASS</td></tr>
+    </table>
+  </div>
+
+  <h2><span class="num">↗</span> Mise en ligne</h2>
+  <div class="card">
+    <p>Commit <code>50f095a</code> — « Retours 21/11 : Nom/Prénoms, animation feu + séries, Mur des témoignages » · Push <code>fc92291..50f095a main -&gt; main</code>.</p>
+    <div class="links">
+      <a class="btn" href="https://github.com/achilledaak05-ui/app-mobile_CAM" target="_blank">📦 Voir le dépôt GitHub</a>
+      <a class="btn red" href="https://achilledaak05-ui.github.io/app-mobile_CAM/" target="_blank">📱 Voir l'application en ligne</a>
+    </div>
+  </div>
+
+  <div class="foot">UNE IDENTITÉ FORTE · UNE EXPRESSION LIBRE · ÉDITION 2026</div>
+</div>
+</body>
+</html>

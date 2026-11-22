@@ -1,5 +1,5 @@
 /* METANOÏA — cache local pour un fonctionnement sans internet */
-const CACHE = 'metanoia-v1';
+const CACHE = 'metanoia-v2';
 const FILES = [
   './',
   './index.html',

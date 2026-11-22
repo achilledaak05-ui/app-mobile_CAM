@@ -176,8 +176,10 @@ screens.register = () => `
     <div class="auth__intro"><h2>Créer mon compte</h2><p>Rejoignez la communauté METANOÏA.</p></div>
     <div class="photo-pick" data-action="toast" data-msg="Ajouter une photo de profil"><span class="alpha">α</span></div>
     <p class="tiny muted" style="text-align:center;margin:0 0 18px">Photo de profil · modifiable à tout moment</p>
-    <div class="field"><label>Nom</label><input class="input" placeholder="Kouassi" autocomplete="family-name" /></div>
-    <div class="field"><label>Prénoms</label><input class="input" placeholder="Esther Akoua" autocomplete="given-name" /></div>
+    <div class="field-row">
+      <div class="field"><label>Nom</label><input class="input" placeholder="Kouassi" autocomplete="family-name" /></div>
+      <div class="field"><label>Prénoms</label><input class="input" placeholder="Esther Akoua" autocomplete="given-name" /></div>
+    </div>
     <div class="field"><label>Date de naissance</label><input class="input" type="date" /></div>
     <div class="field"><label>Numéro de téléphone</label><input class="input" type="tel" placeholder="+225 07 •• •• •• ••" /></div>
     <div class="field"><label>Adresse e-mail</label><input class="input" type="email" placeholder="vous@exemple.com" /></div>
