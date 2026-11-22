@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#6A40C4" />
+  <meta name="description" content="Application mobile du Centre Apostolique METANOÏA — Contempler. Être transformé. Manifester." />
+
+  <!-- Installation locale : s'ajoute à l'écran d'accueil comme une vraie app -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="METANOÏA" />
+  <meta name="application-name" content="METANOÏA" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+
+  <title>METANOÏA — Application mobile</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stage">
+    <div class="ambient ambient--one"></div>
+    <div class="ambient ambient--two"></div>
+
+    <aside class="stage-brand" aria-hidden="true">
+      <div class="stage-brand__alpha">α</div>
+      <div class="stage-brand__name">METANOÏA</div>
+      <div class="stage-brand__sub">CENTRE APOSTOLIQUE</div>
+      <div class="stage-brand__line"></div>
+      <p>Contempler.<br />Être transformé.<br />Manifester.</p>
+      <span class="stage-brand__tag">ÉDITION 2026 · PROTOTYPE MOBILE</span>
+    </aside>
+
+    <div class="phone" id="phone">
+      <div class="phone__notch" aria-hidden="true"></div>
+      <div class="phone__screen" id="screen">
+        <div class="statusbar" id="statusbar">
+          <span class="statusbar__time" id="clock">09:41</span>
+          <span class="statusbar__right">
+            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M2 20h3v-6H2v6zm5 0h3V9H7v11zm5 0h3V4h-3v16zm5 0h3v-9h-3v9z" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" width="14" height="14"><path d="M12 18a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm0-5c-1.7 0-3.2.7-4.3 1.8l1.4 1.4A4 4 0 0 1 12 15c1.1 0 2.1.4 2.9 1.2l1.4-1.4A6 6 0 0 0 12 13zm0-5a9 9 0 0 0-6.4 2.6l1.4 1.4A7 7 0 0 1 12 10c1.9 0 3.7.8 5 2l1.4-1.4A9 9 0 0 0 12 8z" fill="currentColor"/></svg>
+            <span class="statusbar__battery"><i></i></span>
+          </span>
+        </div>
+        <main class="viewport" id="viewport" aria-live="polite"></main>
+        <nav class="tabbar" id="tabbar" aria-label="Navigation principale"></nav>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <p class="stage-hint">Cliquez sur les éléments pour naviguer · Glissez pour changer d’écran</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

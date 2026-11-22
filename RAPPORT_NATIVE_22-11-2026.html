@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>METANOÏA — Application réelle · 22 novembre 2026</title>
+<style>
+  :root{--violet:#6A40C4;--violet-deep:#321A63;--violet-soft:#B9A2EB;--red:#E30613;--red-deep:#A80416;--lavender:#EEE8FA;--line:rgba(185,162,235,.16)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Avenir Next",Avenir,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#fff;line-height:1.6;
+    background:radial-gradient(circle at 10% 5%,rgba(106,64,196,.3),transparent 38%),radial-gradient(circle at 92% 90%,rgba(227,6,19,.11),transparent 42%),linear-gradient(150deg,#0A0516,#1A0D34 55%,#070312);
+    min-height:100vh;padding:50px 22px 90px}
+  .wrap{max-width:900px;margin:0 auto}
+  .eyebrow{font-size:10px;letter-spacing:.28em;font-weight:800;color:var(--violet-soft);text-transform:uppercase}
+  .top{display:flex;align-items:center;gap:16px}
+  .alpha{font-family:Georgia,serif;font-size:58px;color:var(--red);line-height:1;text-shadow:0 0 36px rgba(227,6,19,.5)}
+  h1{font-family:Georgia,serif;font-size:clamp(26px,4vw,38px);margin:6px 0 4px}
+  .sub{color:var(--violet-soft);font-size:13px}
+  .date{display:inline-block;margin-top:16px;padding:7px 13px;border-radius:999px;background:rgba(106,64,196,.18);border:1px solid var(--line);font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--violet-soft)}
+  .hero{margin:28px 0 38px;padding:26px 28px;border-radius:24px;border:1px solid var(--line);background:linear-gradient(140deg,rgba(106,64,196,.22),rgba(21,10,44,.5));box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  .hero p{margin:8px 0 0;color:rgba(255,255,255,.8);font-size:14px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+  .stat{background:linear-gradient(140deg,rgba(106,64,196,.2),rgba(21,10,44,.4));border:1px solid var(--line);border-radius:16px;padding:18px}
+  .stat b{display:block;font-size:26px;line-height:1}
+  .stat span{font-size:9px;color:var(--violet-soft);letter-spacing:.1em;font-weight:700}
+  h2{font-size:19px;margin:38px 0 14px;display:flex;align-items:center;gap:12px}
+  h2 .num{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:13px;flex:none;background:linear-gradient(135deg,var(--red),var(--red-deep));box-shadow:0 6px 16px rgba(227,6,19,.35)}
+  h2 .num.v{background:linear-gradient(135deg,#7C51D6,#5A32A8);box-shadow:0 6px 16px rgba(106,64,196,.35)}
+  .card{background:linear-gradient(150deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin-bottom:14px;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+  .card h3{margin:0 0 12px;font-size:14px;color:var(--violet-soft)}
+  p{margin:0 0 12px;font-size:13.5px;color:rgba(255,255,255,.82)}
+  ul{margin:10px 0 0;padding-left:20px}
+  li{font-size:13px;color:rgba(255,255,255,.78);margin-bottom:7px}
+  code{background:rgba(255,255,255,.08);padding:2px 7px;border-radius:6px;font-size:11.5px;color:#DCD2F2}
+  pre{background:rgba(0,0,0,.4);border:1px solid var(--line);border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:11.5px;color:#DCD2F2}
+  .tag{display:inline-block;padding:4px 9px;border-radius:8px;font-size:9px;font-weight:800;letter-spacing:.1em;background:rgba(106,64,196,.22);color:var(--violet-soft);border:1px solid var(--line);margin-right:6px}
+  .tag.ok{background:rgba(227,6,19,.16);color:#FF7A72;border-color:rgba(227,6,19,.3)}
+  .tag.wait{background:rgba(255,255,255,.07);color:rgba(255,255,255,.6)}
+  .steps{counter-reset:s;list-style:none;padding:0;margin:10px 0 0}
+  .steps li{counter-increment:s;position:relative;padding-left:38px;margin-bottom:12px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:9px;background:rgba(106,64,196,.3);border:1px solid var(--line);display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff}
+  .note{border-left:3px solid var(--red);padding-left:14px;color:#FFB3AE;font-size:12.5px}
+  .foot{text-align:center;color:rgba(255,255,255,.3);font-size:10px;letter-spacing:.18em;margin-top:50px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}body{padding:28px 16px 60px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="alpha">α</div>
+    <div>
+      <div class="eyebrow">Centre Apostolique METANOÏA</div>
+      <h1>De l'application web à l'application réelle</h1>
+      <div class="sub">Sortie de GitHub · Distribution locale · Sans store</div>
+    </div>
+  </div>
+  <div class="date">22 NOVEMBRE 2026 · PHASE NATIVE</div>
+
+  <div class="hero">
+    <span class="tag ok">ANDROID LIVRÉ</span><span class="tag ok">iOS PRÊT</span><span class="tag wait">XCODE REQUIS POUR IPA</span>
+    <p>Objectif : une application qui <strong>reste sur les téléphones de l'église</strong>, installable sans passage par l'App Store ni le Play Store. Le dépôt GitHub est conservé comme sauvegarde du code, mais n'est plus nécessaire à l'utilisation.</p>
+    <div class="grid">
+      <div class="stat"><b>APK 4,0 Mo</b><span>ANDROID · INSTALLABLE</span></div>
+      <div class="stat"><b>1.0</b><span>VERSION DE L'APP</span></div>
+      <div class="stat"><b>HTTPS</b><span>SERVEUR LOCAL iPHONE</span></div>
+    </div>
+  </div>
+
+  <h2><span class="num">1</span> Android — APK natif installable ✅</h2>
+  <div class="card">
+    <h3>Fichier livré</h3>
+    <pre>~/Documents/Metanoia-App/METANOIA-Android.apk   (4,0 Mo)</pre>
+    <ul>
+      <li>Généré avec <strong>Capacitor 7</strong> + Java 21 + SDK Android (build-tools installés automatiquement).</li>
+      <li>Package <code>ci.metanoia.cam.app</code> · nom affiché <strong>METANOÏA</strong> · version 1.0.</li>
+      <li>Compatible Android 6.0+ (minSdk 23, targetSdk 35) — fonctionne sur téléphones <strong>et tablettes</strong>.</li>
+      <li>Signé (certificat debug), <code>BUILD SUCCESSFUL</code> — 85 tâches exécutées en 7 min 39 s.</li>
+      <li>L'application est <strong>embarquée dans l'APK</strong> : fonctionne hors ligne, aucune connexion requise.</li>
+    </ul>
+  </div>
+
+  <h2><span class="num">2</span> Installation sur Android / tablette Android</h2>
+  <div class="card">
+    <ol class="steps">
+      <li>Transférez le <code>.apk</code> sur le téléphone (câble USB, AirDrop, Drive, WhatsApp, e-mail).</li>
+      <li>Ouvrez le fichier depuis le gestionnaire de fichiers.</li>
+      <li>Autorisez « <strong>Sources inconnues</strong> » quand Android le demande.</li>
+      <li>Installez — l'icône violette avec l'alpha rouge apparaît sur l'écran d'accueil.</li>
+    </ol>
+    <p class="note" style="margin-top:16px">Par câble : <code>adb install -r ~/Documents/Metanoia-App/METANOIA-Android.apk</code></p>
+  </div>
+
+  <h2><span class="num v">3</span> iPhone / iPad — PWA installable sans store 🍎</h2>
+  <div class="card">
+    <h3>Serveur HTTPS local (Wi-Fi de l'église)</h3>
+    <ul>
+      <li>Lancez <code>serveur-https.command</code> (double-clic) sur le Mac.</li>
+      <li>Certificat local généré avec <strong>mkcert</strong> pour <code>10.10.10.166</code>, <code>localhost</code> et <code>127.0.0.1</code> (valable jusqu'en février 2029).</li>
+      <li>Le serveur écoute sur <code>https://10.10.10.166:8443</code> — testé : l'app et l'APK répondent en <code>200</code>.</li>
+      <li>Le <strong>service worker</strong> met l'application en cache : une fois installée, elle fonctionne hors ligne, même Mac éteint.</li>
+    </ul>
+    <h3 style="margin-top:18px">Procédure sur l'iPhone / l'iPad</h3>
+    <ol class="steps">
+      <li>Connectez l'appareil au même Wi-Fi que le Mac.</li>
+      <li>Ouvrez <strong>Safari</strong> et allez sur <code>https://10.10.10.166:8443</code>.</li>
+      <li>Avertissement de certificat → « Avancé » → « Accepter le risque » (certificat local de l'église).</li>
+      <li>Bouton <strong>Partager</strong> → « <strong>Sur l'écran d'accueil</strong> ».</li>
+      <li>L'icône METANOÏA apparaît, ouverture plein écran, fonctionnement hors ligne.</li>
+    </ol>
+    <p class="note" style="margin-top:16px">L'installation du profil de certificat (fichier CA dans <code>certificats/</code>) rend l'acceptation permanente sur chaque appareil.</p>
+  </div>
+
+  <h2><span class="num v">4</span> Projet iOS natif (pour plus tard)</h2>
+  <div class="card">
+    <p>Le projet <strong>Capacitor iOS</strong> est déjà généré et prêt :</p>
+    <pre>~/Documents/Metanoia-App/native/ios/App/App.xcworkspace</pre>
+    <ul>
+      <li>Fichiers <code>AppDelegate.swift</code>, <code>Info.plist</code>, <code>config.xml</code>, <code>Podfile</code>, CocoaPods 1.17 installés.</li>
+      <li>Xcode n'est pas installé sur ce Mac → impossible de compiler un IPA ici.</li>
+      <li>Si vous changez d'avis : installez Xcode (Mac App Store, gratuit), ouvrez le workspace, choisissez votre équipe de développement et archivez pour TestFlight ou installation Ad Hoc.</li>
+    </ul>
+  </div>
+
+  <h2><span class="num">5</span> Fichiers créés / utilisés</h2>
+  <div class="card">
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+      <tr><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);color:var(--violet-soft)">Fichier</th><th style="text-align:left;padding:8px;border-bottom:1px solid var(--line);color:var(--violet-soft)">Rôle</th></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid var(--line)"><code>METANOIA-Android.apk</code></td><td style="padding:8px;border-bottom:1px solid var(--line)">Application Android installable</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid var(--line)"><code>serveur-https.command</code></td><td style="padding:8px;border-bottom:1px solid var(--line)">Serveur HTTPS pour iPhone/iPad</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid var(--line)"><code>certificats/</code></td><td style="padding:8px;border-bottom:1px solid var(--line)">Certificat + clé + CA mkcert</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid var(--line)"><code>native/</code></td><td style="padding:8px;border-bottom:1px solid var(--line)">Projets Capacitor Android + iOS</td></tr>
+      <tr><td style="padding:8px;border-bottom:1px solid var(--line)"><code>GUIDE_INSTALLATION.md</code></td><td style="padding:8px;border-bottom:1px solid var(--line)">Procédures détaillées</td></tr>
+    </table>
+  </div>
+
+  <div class="foot">UNE IDENTITÉ FORTE · UNE EXPRESSION LIBRE · ÉDITION 2026</div>
+</div>
+</body>
+</html>

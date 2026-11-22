@@ -773,3 +773,53 @@ button { cursor: pointer; border: 0; background: none; color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* ============================================================
+   APPLICATION AUTONOME — plein écran, sans maquette de téléphone
+   ============================================================ */
+
+html, body { height: 100%; overflow: hidden; background: var(--bg-0); }
+.app { position: fixed; inset: 0; display: flex; flex-direction: column; }
+.viewport { flex: 1; min-height: 0; }
+.screen {
+  padding-top: max(18px, env(safe-area-inset-top));
+  padding-bottom: max(30px, env(safe-area-inset-bottom));
+}
+.tabbar { flex: none; }
+
+/* ---------- Page d'accueil publique ---------- */
+
+.landing { padding: 0 22px 40px; background:
+  radial-gradient(circle at 90% -5%, rgba(227,6,19,.16), transparent 40%),
+  radial-gradient(circle at 5% 30%, rgba(106,64,196,.28), transparent 45%),
+  linear-gradient(165deg, var(--bg-1), var(--bg-0) 70%); }
+
+.landing__nav { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 24px; }
+.landing__brand { display: flex; align-items: center; gap: 10px; }
+.landing__brand .alpha { font-family: var(--font-brand); font-size: 30px; color: var(--red); line-height: 1; text-shadow: 0 0 20px rgba(227,6,19,.45); }
+.landing__brand b { display: block; font-family: var(--font-brand); font-size: 14px; letter-spacing: .06em; }
+.landing__brand small { display: block; font-size: 7px; letter-spacing: .24em; color: var(--violet-soft); }
+.landing__nav .btn { width: auto; min-height: 40px; font-size: 11px; padding: 0 16px; border-radius: 12px; }
+
+.landing__hero { text-align: center; padding: 22px 0 26px; }
+.landing__motto { font-size: 9px; letter-spacing: .18em; color: var(--violet-soft); font-weight: 800; line-height: 1.9; }
+.landing__title { font-family: var(--font-brand); font-size: clamp(30px, 8vw, 44px); line-height: 1.1; margin: 18px 0 12px; }
+.landing__title em { font-style: normal; color: var(--red); }
+.landing__lead { font-size: 13px; line-height: 1.6; color: rgba(255,255,255,.68); max-width: 330px; margin: 0 auto; }
+.landing__cta { display: flex; flex-direction: column; gap: 10px; margin: 26px auto 0; max-width: 340px; }
+.landing__note { font-size: 10px; color: var(--text-3); text-align: center; margin-top: 14px; }
+
+.landing__card { background: linear-gradient(150deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid var(--glass-line); border-radius: var(--r-lg); padding: 20px; box-shadow: var(--shadow-sm); margin-bottom: 14px; }
+.landing__card .verse__text { font-size: 15px; }
+.landing__features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.landing__feature { background: var(--glass); border: 1px solid var(--glass-line); border-radius: 16px; padding: 16px 14px; }
+.landing__feature .quick__ico { margin-bottom: 10px; }
+.landing__feature b { display: block; font-size: 12px; margin-bottom: 4px; }
+.landing__feature small { font-size: 10px; color: var(--text-3); line-height: 1.4; }
+.landing__foot { text-align: center; color: var(--text-3); font-size: 9px; letter-spacing: .12em; margin-top: 28px; line-height: 1.9; }
+
+/* Sur grand écran : l'app reste centrée mais sans cadre */
+@media (min-width: 820px) {
+  .app { left: 50%; right: auto; width: min(520px, 100%); transform: translateX(-50%); box-shadow: 0 0 0 1px var(--glass-line), 0 30px 90px rgba(0,0,0,.55); }
+  body { background: radial-gradient(circle at 20% 10%, rgba(106,64,196,.28), transparent 40%), linear-gradient(150deg,#0A0516,#160B2E); }
+}

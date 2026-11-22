@@ -1,0 +1,19 @@
+{
+  "name": "metanoia-cam-mobile",
+  "version": "1.0.0",
+  "description": "Centre Apostolique METANOÏA — application mobile native",
+  "private": true,
+  "scripts": {
+    "sync": "cap sync",
+    "build:android": "cap sync android && npx cap build android",
+    "build:ios": "cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/ios": "^7.0.0"
+  }
+}
