@@ -179,43 +179,8 @@ const header = (title, opts = {}) => `
 
 const screens = {};
 
-/* Page d'accueil publique — l'application commence ici */
-screens.landing = () => `
-  <div class="screen landing">
-    <div class="landing__nav stagger">
-      <div class="landing__brand"><div class="alpha">α</div><div><b>METANOÏA</b><small>CENTRE APOSTOLIQUE</small></div></div>
-      <button class="btn btn--outline" data-action="nav" data-id="login">Se connecter</button>
-    </div>
-
-    <div class="landing__hero stagger">
-      <div class="landing__motto">CONTEMPLER · ÊTRE TRANSFORMÉ · MANIFESTER</div>
-      <h1 class="landing__title">Votre vie de foi,<br/><em>au même endroit.</em></h1>
-      <p class="landing__lead">Suivez les prédications, priez, méditez la Parole et donnez en toute simplicité — où que vous soyez.</p>
-      <div class="landing__cta">
-        <button class="btn btn--red" data-action="nav" data-id="register">Créer mon compte ${ico('arrow', 17)}</button>
-        <button class="btn btn--outline" data-action="nav" data-id="login">J'ai déjà un compte</button>
-      </div>
-      <div class="landing__note">Inscription gratuite · Réservée aux membres et visiteurs de CAM</div>
-    </div>
-
-    <div class="landing__card stagger">
-      <div class="verse__label">VERSET DU JOUR</div>
-      <div class="verse__text">« Ne vous conformez pas au siècle présent, mais soyez transformés par le renouvellement de l’intelligence. »</div>
-      <div class="verse__ref">Romains 12:2</div>
-    </div>
-
-    <div class="section-head"><h3>Tout votre espace spirituel</h3></div>
-    <div class="landing__features stagger">
-      <div class="landing__feature"><div class="quick__ico">${ico('sermon', 20)}</div><b>Prédications</b><small>Vidéos et audio, à écouter quand vous voulez.</small></div>
-      <div class="landing__feature"><div class="quick__ico">${ico('prayer', 20)}</div><b>Prière</b><small>Vos sujets, vos exaucements, le mur de la communauté.</small></div>
-      <div class="landing__feature"><div class="quick__ico">${ico('bible', 20)}</div><b>Méditation</b><small>Plan de lecture et suivi de vos jours.</small></div>
-      <div class="landing__feature"><div class="quick__ico">${ico('calendar', 20)}</div><b>Agenda</b><small>Cultes, veillées et programmes à venir.</small></div>
-      <div class="landing__feature"><div class="quick__ico">${ico('gift', 20)}</div><b>Don</b><small>Dîmes et offrandes en quelques secondes.</small></div>
-      <div class="landing__feature"><div class="quick__ico">${ico('testimony', 20)}</div><b>Témoignages</b><small>Célébrez ensemble les œuvres de DIEU.</small></div>
-    </div>
-
-    <div class="landing__foot">CENTRE APOSTOLIQUE METANOÏA · ABIDJAN, CÔTE D’IVOIRE<br/>UNE IDENTITÉ FORTE · UNE EXPRESSION LIBRE</div>
-  </div>`;
+/* Ancienne page d'accueil conservée en secours (non utilisée) */
+screens.landing = () => screens.splash();
 
 screens.splash = () => `
   <div class="screen screen--center splash">
@@ -228,6 +193,7 @@ screens.splash = () => `
     <div class="splash__bottom">
       <div class="splash__dots"><i class="active"></i><i></i><i></i></div>
       <button class="btn btn--primary" data-action="nav" data-id="login">Commencer ${ico('arrow', 17)}</button>
+      <div class="auth__link" style="margin:16px 0 0">Nouveau sur METANOÏA ? <b data-action="nav" data-id="register">Créer un compte</b></div>
     </div>
   </div>`;
 
@@ -253,7 +219,7 @@ screens.login = () => `
     </div>
     <button class="btn btn--primary" data-action="do-login">Se connecter</button>
     <div class="auth__link">Nouveau sur METANOÏA ? <b data-action="nav" data-id="register">Créer un compte</b></div>
-    <div class="auth__link"><b data-action="nav" data-id="landing">← Retour à l'accueil</b></div>
+    <div class="auth__link"><b data-action="nav" data-id="splash">← Retour à l'accueil</b></div>
   </div>`;
 
 screens.register = () => `
@@ -933,7 +899,7 @@ document.addEventListener('click', e => {
       state.currentUser = null;
       state.tab = 'accueil';
       toast('Vous êtes déconnecté');
-      setTimeout(() => { state.history = []; navigate('landing'); }, 400);
+      setTimeout(() => { state.history = []; navigate('splash'); }, 400);
       break;
     case 'delete-account': {
       const user = state.currentUser;
@@ -943,7 +909,7 @@ document.addEventListener('click', e => {
       localStorage.removeItem(SESSION_KEY);
       state.currentUser = null;
       toast('Votre compte a été supprimé');
-      setTimeout(() => { state.history = []; navigate('landing'); }, 500);
+      setTimeout(() => { state.history = []; navigate('splash'); }, 500);
       break;
     }
     case 'eye': state.showPassword = !state.showPassword; refresh(); break;
@@ -1084,5 +1050,5 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     }
     localStorage.removeItem(SESSION_KEY);
   }
-  navigate('landing', { animate: false, replace: true });
+  navigate('splash', { animate: false, replace: true });
 })();

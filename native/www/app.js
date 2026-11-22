@@ -91,8 +91,56 @@ const state = {
   amount: 25000,
   pay: 'momo',
   notifRead: false,
-  showPassword: false
+  showPassword: false,
+  currentUser: null,
+  regSexe: '',
+  regStatut: 'Membre'
 };
+
+/* ---------------- Comptes & espace personnel (localStorage) ---------------- */
+
+const USERS_KEY = 'metanoia_users';
+const SESSION_KEY = 'metanoia_session';
+const DATA_KEY = id => 'metanoia_data_' + id;
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
+  catch (e) { return []; }
+}
+function saveUsers(list) { localStorage.setItem(USERS_KEY, JSON.stringify(list)); }
+
+const USER_FIELDS = ['track','streak','subjects','wall','testimonies','joined','celebrated','readings','amount','pay','notifRead'];
+
+function defaultUserData() {
+  return {
+    track: { prie: null, medite: null },
+    streak: { prie: 0, medite: 0 },
+    subjects: [],
+    wall: [],
+    testimonies: [],
+    joined: [],
+    celebrated: [],
+    readings: [false, false, false],
+    amount: 25000,
+    pay: 'momo',
+    notifRead: false
+  };
+}
+function saveUserData() {
+  if (!state.currentUser) return;
+  const data = {};
+  USER_FIELDS.forEach(f => data[f] = state[f]);
+  try { localStorage.setItem(DATA_KEY(state.currentUser.id), JSON.stringify(data)); } catch (e) {}
+}
+function loadUserData(user) {
+  let data = null;
+  try { data = JSON.parse(localStorage.getItem(DATA_KEY(user.id)) || 'null'); } catch (e) {}
+  const base = defaultUserData();
+  USER_FIELDS.forEach(f => { state[f] = (data && data[f] !== undefined) ? data[f] : base[f]; });
+}
+function initials(u) {
+  return ((u.prenoms || '').trim()[0] || '') + ((u.nom || '').trim()[0] || '') || 'MK';
+}
 
 const TABS = [
   { id: 'accueil', label: 'Accueil', icon: 'home' },
@@ -131,6 +179,9 @@ const header = (title, opts = {}) => `
 
 const screens = {};
 
+/* Ancienne page d'accueil conservée en secours (non utilisée) */
+screens.landing = () => screens.splash();
+
 screens.splash = () => `
   <div class="screen screen--center splash">
     <div class="splash__top">
@@ -142,6 +193,7 @@ screens.splash = () => `
     <div class="splash__bottom">
       <div class="splash__dots"><i class="active"></i><i></i><i></i></div>
       <button class="btn btn--primary" data-action="nav" data-id="login">Commencer ${ico('arrow', 17)}</button>
+      <div class="auth__link" style="margin:16px 0 0">Nouveau sur METANOÏA ? <b data-action="nav" data-id="register">Créer un compte</b></div>
     </div>
   </div>`;
 
@@ -154,19 +206,20 @@ screens.login = () => `
     </div>
     <div class="field">
       <label>E-mail ou téléphone</label>
-      <div class="input-ico">${ico('mail', 17)}<input class="input" type="text" placeholder="vous@exemple.com" /></div>
+      <div class="input-ico">${ico('mail', 17)}<input class="input" id="loginId" type="text" placeholder="vous@exemple.com" autocomplete="username" /></div>
     </div>
     <div class="field">
       <label>Mot de passe</label>
       <div class="input-ico" style="position:relative">
         ${ico('lock', 17)}
-        <input class="input" type="${state.showPassword ? 'text' : 'password'}" placeholder="••••••••" style="padding-right:48px" />
+        <input class="input" id="loginPass" type="${state.showPassword ? 'text' : 'password'}" placeholder="••••••••" style="padding-right:48px" autocomplete="current-password" />
         <button data-action="eye" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#A8A2B4">${ico(state.showPassword ? 'eyeoff' : 'eye', 18)}</button>
       </div>
-      <button class="auth__forgot" data-action="toast" data-msg="Lien de réinitialisation envoyé">Mot de passe oublié ?</button>
+      <button class="auth__forgot" data-action="toast" data-msg="Contactez le secrétariat de l'église pour réinitialiser votre mot de passe">Mot de passe oublié ?</button>
     </div>
-    <button class="btn btn--primary" data-action="login">Se connecter</button>
+    <button class="btn btn--primary" data-action="do-login">Se connecter</button>
     <div class="auth__link">Nouveau sur METANOÏA ? <b data-action="nav" data-id="register">Créer un compte</b></div>
+    <div class="auth__link"><b data-action="nav" data-id="splash">← Retour à l'accueil</b></div>
   </div>`;
 
 screens.register = () => `
@@ -177,27 +230,28 @@ screens.register = () => `
     <div class="photo-pick" data-action="toast" data-msg="Ajouter une photo de profil"><span class="alpha">α</span></div>
     <p class="tiny muted" style="text-align:center;margin:0 0 18px">Photo de profil · modifiable à tout moment</p>
     <div class="field-row">
-      <div class="field"><label>Nom</label><input class="input" placeholder="Kouassi" autocomplete="family-name" /></div>
-      <div class="field"><label>Prénoms</label><input class="input" placeholder="Esther Akoua" autocomplete="given-name" /></div>
+      <div class="field"><label>Nom *</label><input class="input" id="regNom" placeholder="Kouassi" autocomplete="family-name" /></div>
+      <div class="field"><label>Prénoms *</label><input class="input" id="regPrenoms" placeholder="Esther Akoua" autocomplete="given-name" /></div>
     </div>
-    <div class="field"><label>Date de naissance</label><input class="input" type="date" /></div>
-    <div class="field"><label>Numéro de téléphone</label><input class="input" type="tel" placeholder="+225 07 •• •• •• ••" /></div>
-    <div class="field"><label>Adresse e-mail</label><input class="input" type="email" placeholder="vous@exemple.com" /></div>
-    <div class="field"><label>Sexe (facultatif)</label><div class="sex-pick"><button data-action="sex" data-v="Homme">Homme</button><button data-action="sex" data-v="Femme">Femme</button></div></div>
-    <div class="field"><label>Ville ou commune (facultatif)</label><input class="input" placeholder="Cocody, Abidjan" /></div>
-    <div class="field"><label>Statut (facultatif)</label><div class="sex-pick"><button data-action="status" data-v="Membre" class="active">Membre</button><button data-action="status" data-v="Visiteur">Visiteur</button></div></div>
-    <div class="field"><label>Date d’adhésion (facultatif)</label><input class="input" type="date" /></div>
+    <div class="field"><label>Date de naissance</label><input class="input" id="RegNaissance" type="date" /></div>
+    <div class="field"><label>Numéro de téléphone *</label><input class="input" id="regTel" type="tel" placeholder="+225 07 •• •• •• ••" autocomplete="tel" /></div>
+    <div class="field"><label>Adresse e-mail *</label><input class="input" id="regEmail" type="email" placeholder="vous@exemple.com" autocomplete="email" /></div>
+    <div class="field"><label>Mot de passe * (8 caractères minimum)</label><input class="input" id="regPass" type="password" placeholder="••••••••" autocomplete="new-password" /></div>
+    <div class="field"><label>Sexe (facultatif)</label><div class="sex-pick"><button data-action="sex" data-v="Homme" class="${state.regSexe === 'Homme' ? 'active' : ''}">Homme</button><button data-action="sex" data-v="Femme" class="${state.regSexe === 'Femme' ? 'active' : ''}">Femme</button></div></div>
+    <div class="field"><label>Ville ou commune (facultatif)</label><input class="input" id="regVille" placeholder="Cocody, Abidjan" /></div>
+    <div class="field"><label>Statut (facultatif)</label><div class="sex-pick"><button data-action="status" data-v="Membre" class="${state.regStatut === 'Membre' ? 'active' : ''}">Membre</button><button data-action="status" data-v="Visiteur" class="${state.regStatut === 'Visiteur' ? 'active' : ''}">Visiteur</button></div></div>
+    <div class="field"><label>Date d’adhésion (facultatif)</label><input class="input" id="regAdhesion" type="date" /></div>
     <p class="privacy">Vos informations personnelles restent privées et ne sont jamais visibles par les autres membres.</p>
-    <button class="btn btn--primary" data-action="login">Créer mon compte</button>
+    <button class="btn btn--primary" data-action="do-register">Créer mon compte</button>
   </div>`;
 
 screens.accueil = () => `
   <div class="screen">
     <div class="greeting stagger">
-      <button class="avatar" data-action="nav" data-id="profil" aria-label="Mon profil" title="Mon profil">EK</button>
+      <button class="avatar" data-action="nav" data-id="profil" aria-label="Mon profil" title="Mon profil">${initials(state.currentUser || { prenoms: 'E', nom: 'K' })}</button>
       <div class="greeting__text">
-        <p class="eyebrow">VENDREDI 20 NOVEMBRE</p>
-        <h2 class="h2">Bonjour Esther,</h2>
+        <p class="eyebrow">${new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase()}</p>
+        <h2 class="h2">Bonjour ${(state.currentUser?.prenoms || 'Membre').split(' ')[0]},</h2>
         <div class="muted">Aujourd’hui est une nouvelle opportunité de se rapprocher d’ABBA.</div>
       </div>
       <button class="icon-btn" data-action="nav" data-id="notifications">${ico('bell', 18)}${state.notifRead ? '' : '<i class="icon-btn__dot"></i>'}</button>
@@ -600,13 +654,16 @@ screens.profil = () => `
   <div class="screen">
     ${header('Mon profil', { back: true })}
     <div class="profile-head stagger">
-      <div class="avatar avatar--lg">EK</div>
-      <h2>Esther Kouassi</h2>
-      <p>Membre · depuis 2024</p>
+      <div class="avatar avatar--lg">${initials(state.currentUser || { prenoms: 'E', nom: 'K' })}</div>
+      <h2>${(state.currentUser?.prenoms || '')} ${(state.currentUser?.nom || '')}</h2>
+      <p>${state.currentUser?.statut || 'Membre'} · ${state.currentUser?.dateAdhesion ? 'depuis ' + state.currentUser.dateAdhesion : 'membre de CAM'}</p>
     </div>
     <div class="card stagger">
       <p class="eyebrow">MES INFORMATIONS PRIVÉES</p>
-      ${[['Date de naissance','14 mars'],['Téléphone','+225 07 •• •• •• 12'],['E-mail','esther.k@mail.com'],['Ville','Cocody, Abidjan']]
+      ${[['Date de naissance', state.currentUser?.dateNaissance || 'Non renseignée'],
+         ['Téléphone', state.currentUser?.telephone || 'Non renseigné'],
+         ['E-mail', state.currentUser?.email || 'Non renseigné'],
+         ['Ville', state.currentUser?.ville || 'Non renseignée']]
         .map(x => `<div class="info-line"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}
     </div>
     <div class="section-head"><h3>Paramètres</h3></div>
@@ -616,15 +673,15 @@ screens.profil = () => `
           <div class="row__ico">${ico(x[0],17)}</div><div class="row__body"><b>${x[1]}</b></div><span class="row__chev">${ico('right',16)}</span>
         </div>`).join('')}
     </div>
-    <button class="btn btn--outline" style="margin-bottom:10px" data-action="toast" data-msg="Vous êtes déconnecté">${ico('logout',17)} Me déconnecter</button>
-    <button class="btn btn--small btn--ghost-light" style="width:100%;background:transparent;color:var(--red);border-color:rgba(227,6,19,.3)" data-action="toast" data-msg="Confirmation requise">Supprimer mon compte</button>
+    <button class="btn btn--outline" style="margin-bottom:10px" data-action="logout">${ico('logout',17)} Me déconnecter</button>
+    <button class="btn btn--small btn--ghost-light" style="width:100%;background:transparent;color:var(--red);border-color:rgba(227,6,19,.3)" data-action="delete-account">Supprimer mon compte</button>
   </div>`;
 
 /* ---------------- Navigation ---------------- */
 
 const viewport = document.getElementById('viewport');
 const tabbar = document.getElementById('tabbar');
-const statusbar = document.getElementById('statusbar');
+const statusbar = document.getElementById('statusbar'); // absent en mode autonome
 const toastEl = document.getElementById('toast');
 const screenEl = document.getElementById('screen');
 
@@ -651,7 +708,7 @@ function updateTabInd() {
 }
 
 function updateStatus() {
-  statusbar.classList.toggle('statusbar--light', state.screen === 'splash');
+  if (statusbar) statusbar.classList.toggle('statusbar--light', state.screen === 'splash');
 }
 
 function navigate(id, opts = {}) {
@@ -691,6 +748,7 @@ function refresh() {
   const scroll = cur.scrollTop;
   cur.innerHTML = screens[state.screen]();
   cur.scrollTop = scroll;
+  saveUserData();
   renderTabbar();
 }
 
@@ -787,14 +845,76 @@ document.addEventListener('click', e => {
     case 'back': goBack(); break;
     case 'tab': navigate(el.dataset.id, { replace: true }); break;
     case 'toast': toast(el.dataset.msg); break;
-    case 'login':
-      toast('Bienvenue dans METANOÏA');
+    case 'do-register': {
+      const nom = document.getElementById('regNom')?.value.trim();
+      const prenoms = document.getElementById('regPrenoms')?.value.trim();
+      const telephone = document.getElementById('regTel')?.value.trim();
+      const email = document.getElementById('regEmail')?.value.trim().toLowerCase();
+      const password = document.getElementById('regPass')?.value || '';
+      if (!nom || !prenoms || !telephone || !email) { toast('Renseignez le nom, les prénoms, le téléphone et l’e-mail'); break; }
+      if (password.length < 8) { toast('Le mot de passe doit contenir au moins 8 caractères'); break; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast('Adresse e-mail invalide'); break; }
+      const users = getUsers();
+      if (users.some(u => u.email === email || u.telephone === telephone)) { toast('Ce compte existe déjà — connectez-vous'); break; }
+      const user = {
+        id: 'u' + Date.now(),
+        nom, prenoms, telephone, email, password,
+        dateNaissance: document.getElementById('RegNaissance')?.value || '',
+        ville: document.getElementById('regVille')?.value.trim() || '',
+        statut: state.regStatut,
+        sexe: state.regSexe,
+        dateAdhesion: document.getElementById('regAdhesion')?.value || '',
+        createdAt: new Date().toISOString()
+      };
+      users.push(user); saveUsers(users);
+      localStorage.setItem(SESSION_KEY, user.id);
+      state.currentUser = user;
+      const base = defaultUserData();
+      base.subjects = [
+        { t: 'Pour ma famille et la paix dans notre foyer', d: 'Ajouté à l’instant', done: false },
+        { t: 'Pour la réussite de mes examens', d: 'Ajouté à l’instant', done: false }
+      ];
+      USER_FIELDS.forEach(f => state[f] = base[f]);
+      saveUserData();
+      toast('Bienvenue ' + prenoms.split(' ')[0] + ' ! Votre espace est prêt.');
+      setTimeout(() => { state.history = []; navigate('accueil'); }, 600);
+      break;
+    }
+    case 'do-login': {
+      const id = (document.getElementById('loginId')?.value || '').trim().toLowerCase();
+      const pass = document.getElementById('loginPass')?.value || '';
+      if (!id || !pass) { toast('Renseignez votre identifiant et votre mot de passe'); break; }
+      const user = getUsers().find(u => u.email === id || u.telephone === id || u.telephone.replace(/\s/g, '') === id.replace(/\s/g, ''));
+      if (!user) { toast('Aucun compte trouvé avec cet identifiant'); break; }
+      if (user.password !== pass) { toast('Mot de passe incorrect'); break; }
+      localStorage.setItem(SESSION_KEY, user.id);
+      state.currentUser = user;
+      loadUserData(user);
+      toast('Bon retour ' + user.prenoms.split(' ')[0] + ' !');
       setTimeout(() => { state.history = []; navigate('accueil'); }, 500);
       break;
+    }
+    case 'logout':
+      localStorage.removeItem(SESSION_KEY);
+      state.currentUser = null;
+      state.tab = 'accueil';
+      toast('Vous êtes déconnecté');
+      setTimeout(() => { state.history = []; navigate('splash'); }, 400);
+      break;
+    case 'delete-account': {
+      const user = state.currentUser;
+      if (!user) break;
+      saveUsers(getUsers().filter(u => u.id !== user.id));
+      try { localStorage.removeItem(DATA_KEY(user.id)); } catch (e) {}
+      localStorage.removeItem(SESSION_KEY);
+      state.currentUser = null;
+      toast('Votre compte a été supprimé');
+      setTimeout(() => { state.history = []; navigate('splash'); }, 500);
+      break;
+    }
     case 'eye': state.showPassword = !state.showPassword; refresh(); break;
-    case 'sex': case 'status':
-      el.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-      el.classList.add('active'); break;
+    case 'sex': state.regSexe = el.dataset.v; el.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active')); el.classList.add('active'); break;
+    case 'status': state.regStatut = el.dataset.v; el.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active')); el.classList.add('active'); break;
     case 'yesno': {
       const q = el.dataset.q;
       const was = state.track[q];
@@ -902,8 +1022,10 @@ window.addEventListener('resize', updateTabInd);
 
 // Horloge
 function tick() {
+  const clock = document.getElementById('clock');
+  if (!clock) return;
   const d = new Date();
-  document.getElementById('clock').textContent =
+  clock.textContent =
     String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
 }
 tick(); setInterval(tick, 20000);
@@ -915,5 +1037,18 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   });
 }
 
-// Démarrage
-navigate('splash', { animate: false, replace: true });
+// Démarrage : on restaure la session si elle existe, sinon page d'accueil publique
+(function start() {
+  const savedId = localStorage.getItem(SESSION_KEY);
+  if (savedId) {
+    const user = getUsers().find(u => u.id === savedId);
+    if (user) {
+      state.currentUser = user;
+      loadUserData(user);
+      navigate('accueil', { animate: false, replace: true });
+      return;
+    }
+    localStorage.removeItem(SESSION_KEY);
+  }
+  navigate('splash', { animate: false, replace: true });
+})();
