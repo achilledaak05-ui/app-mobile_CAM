@@ -1,5 +1,7 @@
 # METANOÏA — Application mobile (prototype interactif) · Édition Premium Noir & Violet
 
+> **Retours développement — 21 novembre 2026** : inscription Nom/Prénoms séparés, animation de feu + séries de jours pour la prière et la méditation, ajout du **Mur des témoignages** dans l'onglet Prière.
+
 Application mobile du **Centre Apostolique METANOÏA (CAM)**, conçue à partir :
 
 - de la **Charte graphique institutionnelle — Édition 2026** (`~/Desktop/Charte Graphique CAM.pdf`) ;
@@ -67,6 +69,7 @@ Si vous me donnez vos vrais liens, je les intégrerai moi-même.
 | 10 | Prière — War Room (sujets, cases « exaucé », feuille d'ajout) | onglet Prière |
 | 11 | Prière — Exaucements (compteur, mur de reconnaissance) | segment Exaucements |
 | 12 | Prière — Mur de prière (publications, « je me joins à vous ») | segment Mur de prière |
+| 12b | **Prière — Mur des témoignages** (publications visibles par tous, « Célébrer avec vous ») | segment Mur des témoignages |
 | 13 | Méditation — Plan annuel (anneau de progression 86 %, lectures, régularité) | onglet Méditation |
 | 14 | Méditation — Mon plan personnel (calendrier, passages lus) | segment Mon plan personnel |
 | 15 | Faire un don (montants rapides, montant libre, moyens de paiement, confirmation) | onglet Don |
@@ -80,6 +83,7 @@ Si vous me donnez vos vrais liens, je les intégrerai moi-même.
 - Apparatus de la barre d'onglets avec indicateur animé.
 - Anneau de progression de lecture animé, ligne de scan QR en boucle.
 - Effets « ripple » sur les boutons, feuille modale glissante, toasts de confirmation.
+- **Animation de feu** sur les cartes de suivi : quand le membre confirme avoir prié ou médité, des flammes montent sur la carte et la **série de jours consécutifs** s'incrémente (badge flame rouge). Le même clic ne compte qu'une fois par jour.
 - Respect de `prefers-reduced-motion` (animations désactivées si demandé par le système).
 
 ## Direction artistique — Édition Premium

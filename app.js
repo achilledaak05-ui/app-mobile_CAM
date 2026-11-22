@@ -42,7 +42,9 @@ const I = {
   ig: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 3a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm0 13a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm5-10a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>',
   tt: '<path d="M16 3a5 5 0 0 0 3 1v3a3 3 0 0 1-2-1v8a6 6 0 1 1-6-6h1v3a3 3 0 1 0 2 3V3h2z"/>',
   eye: '<path d="M12 5c-6 0-10 7-10 7s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>',
-  eyeoff: '<path d="M2.9 2.9 2 3.8l3.2 3.2A11 11 0 0 0 2 12s4 7 10 7a10 10 0 0 0 4.2-.9l3 3 .9-.9L2.9 2.9zM12 17a5 5 0 0 1-3.4-8.7l1.5 1.5A3 3 0 0 0 13.2 13l1.5 1.5A5 5 0 0 1 12 17zm8-5a12 12 0 0 1-1.7 3l-1.5-1.5A9 9 0 0 0 20 12c-1-1.6-4-5.3-8-5.3a8 8 0 0 0-2 .3L8.4 5.4A10 10 0 0 1 12 5c6 0 10 7 10 7z"/>'
+  eyeoff: '<path d="M2.9 2.9 2 3.8l3.2 3.2A11 11 0 0 0 2 12s4 7 10 7a10 10 0 0 0 4.2-.9l3 3 .9-.9L2.9 2.9zM12 17a5 5 0 0 1-3.4-8.7l1.5 1.5A3 3 0 0 0 13.2 13l1.5 1.5A5 5 0 0 1 12 17zm8-5a12 12 0 0 1-1.7 3l-1.5-1.5A9 9 0 0 0 20 12c-1-1.6-4-5.3-8-5.3a8 8 0 0 0-2 .3L8.4 5.4A10 10 0 0 1 12 5c6 0 10 7 10 7z"/>',
+  flame: '<path d="M13.5 2c.5 3-1 4.5-2.5 6-1.2 1.2-2 2.4-2 4 0 .8.2 1.5.6 2.1-.8-.3-1.5-1-1.9-1.9C6.3 14 6 15.3 6 16.6 6 20 9 23 12.5 23S19 20 19 16.6c0-4.2-2.6-6.4-4-8.6-.5 1-1.2 1.7-2 2 .3-2.7-.4-5.7-1.5-8z"/>',
+  testimony: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 15-4-4 1.4-1.4L11 14.2l5.6-5.6L18 10l-7 7z"/>'
 };
 
 const ico = (n, s = 20) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor" aria-hidden="true">${I[n] || ''}</svg>`;
@@ -66,6 +68,8 @@ const state = {
   tab: 'accueil',
   tabs: { notif: 'Toutes', agenda: 'À venir', sermons: 'Toutes', prayer: 'War Room', meditation: 'Plan annuel' },
   track: { prie: null, medite: null },
+  streak: { prie: 12, medite: 8 },
+  celebrated: [],
   subjects: [
     { t: 'Pour ma famille et la paix dans notre foyer', d: 'Ajouté le 2 nov.', done: false },
     { t: 'Sagesse pour mon nouveau projet professionnel', d: 'Ajouté le 9 nov.', done: false },
@@ -76,6 +80,11 @@ const state = {
     { ini: 'AK', name: 'Aya K.', time: "Aujourd’hui · 08:12", text: 'Je confie à vos prières l’opération de ma maman prévue lundi. Que la main de DIEU guide les médecins.', count: 23 },
     { ini: 'JM', name: 'Jean-Marc D.', time: 'Hier · 19:40', text: 'Priez pour notre groupe de jeunes : unité, zèle et persévérance pendant les jeûnes de décembre.', count: 41 },
     { ini: 'SB', name: 'Sarah B.', time: '14 nov. · Prière exaucée', text: 'Merci à tous ceux qui ont prié pour mon emploi : j’ai signé mon contrat cette semaine !', count: 67 }
+  ],
+  testimonies: [
+    { ini: 'NC', name: 'Nadège C.', time: "Aujourd’hui · 07:45", text: 'Après trois mois de recherche, DIEU m’a ouvert une porte inattendue. Je témoigne de sa fidélité : Il n’a jamais tardé.', count: 34 },
+    { ini: 'KB', name: 'Koffi B.', time: 'Hier · 18:20', text: 'Mon fils était malade, nous avons prié ensemble et le Seigneur l’a restauré. À Lui soit la gloire !', count: 58 },
+    { ini: 'AM', name: 'Aminata M.', time: '16 nov. · Témoignage', text: 'J’ai trouvé une nouvelle famille ici. Merci pour votre accueil et vos prières, ma vie a changé.', count: 72 }
   ],
   joined: [],
   readings: [true, false, true],
@@ -167,7 +176,8 @@ screens.register = () => `
     <div class="auth__intro"><h2>Créer mon compte</h2><p>Rejoignez la communauté METANOÏA.</p></div>
     <div class="photo-pick" data-action="toast" data-msg="Ajouter une photo de profil"><span class="alpha">α</span></div>
     <p class="tiny muted" style="text-align:center;margin:0 0 18px">Photo de profil · modifiable à tout moment</p>
-    <div class="field"><label>Nom et prénom</label><input class="input" placeholder="Esther Kouassi" /></div>
+    <div class="field"><label>Nom</label><input class="input" placeholder="Kouassi" autocomplete="family-name" /></div>
+    <div class="field"><label>Prénoms</label><input class="input" placeholder="Esther Akoua" autocomplete="given-name" /></div>
     <div class="field"><label>Date de naissance</label><input class="input" type="date" /></div>
     <div class="field"><label>Numéro de téléphone</label><input class="input" type="tel" placeholder="+225 07 •• •• •• ••" /></div>
     <div class="field"><label>Adresse e-mail</label><input class="input" type="email" placeholder="vous@exemple.com" /></div>
@@ -197,20 +207,23 @@ screens.accueil = () => `
       <div class="verse__ref">Romains 12:2</div>
     </div>
 
-    <div class="card track-card stagger" style="margin-top:14px">
+    <div class="section-head"><h3>Mon suivi du jour</h3></div>
+    <div class="card track-card stagger" id="track-prie" style="margin-top:0">
       <div>
-        <div class="track-card__date">MON SUIVI DU JOUR</div>
+        <div class="track-card__date">PRIÈRE QUOTIDIENNE</div>
         <div class="track-card__q">Avez-vous prié<br/>aujourd’hui ?</div>
+        <div class="streak-badge">${ico('flame', 13)} <b>${state.streak.prie}</b> jours consécutifs</div>
       </div>
       <div class="yesno">
         <button data-action="yesno" data-q="prie" data-v="yes" class="${state.track.prie === 'yes' ? 'active' : ''}">Oui</button>
         <button data-action="yesno" data-q="prie" data-v="no" class="${state.track.prie === 'no' ? 'active' : ''}">Non</button>
       </div>
     </div>
-    <div class="card track-card stagger" style="margin-top:-6px">
+    <div class="card track-card stagger" id="track-medite" style="margin-top:-4px">
       <div>
-        <div class="track-card__date">&nbsp;</div>
+        <div class="track-card__date">MÉDITATION QUOTIDIENNE</div>
         <div class="track-card__q">Avez-vous médité<br/>aujourd’hui ?</div>
+        <div class="streak-badge">${ico('flame', 13)} <b>${state.streak.medite}</b> jours consécutifs</div>
       </div>
       <div class="yesno">
         <button data-action="yesno" data-q="medite" data-v="yes" class="${state.track.medite === 'yes' ? 'active' : ''}">Oui</button>
@@ -434,11 +447,25 @@ screens.priere = () => {
         <div class="prayer-card__title">Réussite à mon examen de fin d’année</div>
         <div class="prayer-card__date">Exaucé le 24 oct. · Prié depuis le 1er sept.</div>
       </div>`;
+  } else if (tab === 'Mur des témoignages') {
+    content = `
+      <div class="card stagger" style="display:flex;gap:12px;align-items:center">
+        <div class="avatar" style="background:linear-gradient(135deg,#F01220,#A80416)">EK</div>
+        <button class="input" style="text-align:left;color:rgba(255,255,255,.3)" data-action="sheet" data-msg="newTestimony">Publier un témoignage…</button>
+      </div>
+      ${state.testimonies.map((p, i) => `<div class="wall-post stagger">
+        <div class="wall-post__head"><div class="avatar avatar--sm" style="background:${i === 2 ? 'var(--red)' : 'var(--violet)'}">${p.ini}</div><div><b>${p.name}</b><small>${p.time}</small></div></div>
+        <p class="wall-post__text">${p.text}</p>
+        <div class="wall-post__foot">
+          <span class="wall-post__count">${p.count + (state.celebrated.includes(i) ? 1 : 0)} personnes célèbrent avec vous</span>
+          <button class="wall-post__join ${state.celebrated.includes(i) ? 'joined' : ''}" data-action="celebrate" data-i="${i}">${ico('testimony',14)} ${state.celebrated.includes(i) ? 'Amen, je célèbre !' : 'Célébrer avec vous'}</button>
+        </div>
+      </div>`).join('')}`;
   } else {
     content = `
       <div class="card stagger" style="display:flex;gap:12px;align-items:center">
         <div class="avatar" style="background:var(--red)">EK</div>
-        <button class="input" style="text-align:left;color:#A8A2B4" data-action="sheet" data-msg="newPrayer">Publier un sujet de prière…</button>
+        <button class="input" style="text-align:left;color:rgba(255,255,255,.3)" data-action="sheet" data-msg="newPrayer">Publier un sujet de prière…</button>
       </div>
       ${state.wall.map((p, i) => `<div class="wall-post stagger">
         <div class="wall-post__head"><div class="avatar avatar--sm" style="background:${i === 2 ? 'var(--red)' : 'var(--violet)'}">${p.ini}</div><div><b>${p.name}</b><small>${p.time}</small></div></div>
@@ -452,7 +479,7 @@ screens.priere = () => {
   return `
   <div class="screen">
     ${header('Ma vie de prière', { back: false, bell: true })}
-    ${segmented('prayer', ['War Room', 'Exaucements', 'Mur de prière'], true)}
+    ${segmented('prayer', ['War Room', 'Exaucements', 'Mur de prière', 'Mur des témoignages'], true)}
     ${content}
   </div>`;
 };
@@ -694,20 +721,43 @@ function sheet(type) {
   }
 
   const titles = {
-    newPrayer: ['Nouveau sujet de prière', 'Confiez votre sujet à DIEU. Il reste privé et visible seulement par vous.', 'Enregistrer']
+    newPrayer: ['Nouveau sujet de prière', 'Confiez votre sujet à DIEU. Il reste privé et visible seulement par vous.', 'Enregistrer', 'Écrivez votre sujet de prière…', 'save-prayer'],
+    newTestimony: ['Publier un témoignage', 'Partagez ce que DIEU a fait pour vous. Votre témoignage sera visible par tous les membres.', 'Publier le témoignage', 'Racontez ce que DIEU a fait pour vous…', 'save-testimony']
   };
-  const [title, desc, cta] = titles[type] || titles.newPrayer;
+  const [title, desc, cta, placeholder, action] = titles[type] || titles.newPrayer;
   back.innerHTML = `
     <div class="sheet">
       <div class="sheet__grab"></div>
       <h3 class="h2" style="font-size:19px;margin-bottom:6px">${title}</h3>
       <p class="tiny muted" style="margin:0 0 18px">${desc}</p>
-      <div class="field"><textarea class="input" id="prayerInput" style="height:110px;padding-top:14px;resize:none" placeholder="Écrivez votre sujet de prière…"></textarea></div>
-      <button class="btn btn--red" data-action="save-prayer">${cta}</button>
+      <div class="field"><textarea class="input" id="prayerInput" style="height:110px;padding-top:14px;resize:none" placeholder="${placeholder}"></textarea></div>
+      <button class="btn btn--red" data-action="${action}">${cta}</button>
     </div>`;
   back.addEventListener('click', e => { if (e.target === back) back.remove(); });
   screenEl.appendChild(back);
   setTimeout(() => document.getElementById('prayerInput')?.focus(), 350);
+}
+
+/* Animation de feu — validation prière / méditation */
+function fireAnimation(q) {
+  const card = document.getElementById('track-' + q);
+  if (!card) return;
+  card.classList.remove('fire-active');
+  void card.offsetWidth;
+  card.classList.add('fire-active');
+
+  const layer = document.createElement('div');
+  layer.className = 'fire-layer';
+  for (let i = 0; i < 16; i++) {
+    const p = document.createElement('i');
+    p.style.setProperty('--x', (Math.random() * 88 + 6) + '%');
+    p.style.setProperty('--d', (Math.random() * .55 + .05) + 's');
+    p.style.setProperty('--s', (Math.random() * 7 + 6) + 'px');
+    layer.appendChild(p);
+  }
+  card.appendChild(layer);
+  setTimeout(() => layer.remove(), 1600);
+  setTimeout(() => card.classList.remove('fire-active'), 1300);
 }
 
 function ripple(e) {
@@ -743,7 +793,21 @@ document.addEventListener('click', e => {
     case 'sex': case 'status':
       el.parentElement.querySelectorAll('button').forEach(b => b.classList.remove('active'));
       el.classList.add('active'); break;
-    case 'yesno': state.track[el.dataset.q] = el.dataset.v; refresh(); toast('Suivi du jour enregistré'); break;
+    case 'yesno': {
+      const q = el.dataset.q;
+      const was = state.track[q];
+      state.track[q] = el.dataset.v;
+      let celebrated = false;
+      if (el.dataset.v === 'yes' && was !== 'yes') { state.streak[q] += 1; celebrated = true; }
+      refresh();
+      if (celebrated) {
+        requestAnimationFrame(() => fireAnimation(q));
+        toast(q === 'prie'
+          ? `Série de ${state.streak.prie} jours de prière !`
+          : `Série de ${state.streak.medite} jours de méditation !`);
+      } else toast('Suivi du jour enregistré');
+      break;
+    }
     case 'chip': state.tabs[el.dataset.group] = el.dataset.v; refresh(); break;
     case 'segment': state.tabs[el.dataset.group] = el.dataset.v; refresh(); break;
     case 'mark-read': state.notifRead = true; refresh(); toast('Notifications marquées comme lues'); break;
@@ -752,6 +816,11 @@ document.addEventListener('click', e => {
       const i = +el.dataset.i;
       state.joined.includes(i) ? state.joined.splice(state.joined.indexOf(i), 1) : state.joined.push(i);
       refresh(); toast('Votre prière a été ajoutée'); break;
+    }
+    case 'celebrate': {
+      const i = +el.dataset.i;
+      state.celebrated.includes(i) ? state.celebrated.splice(state.celebrated.indexOf(i), 1) : state.celebrated.push(i);
+      refresh(); toast('Amen, gloire à DIEU !'); break;
     }
     case 'reading': state.readings[+el.dataset.i] = true; refresh(); toast('Lecture enregistrée'); break;
     case 'amount': state.amount = +el.dataset.v; refresh(); break;
@@ -773,6 +842,17 @@ document.addEventListener('click', e => {
     case 'save-prayer': {
       const v = document.getElementById('prayerInput')?.value.trim();
       if (v) { state.subjects.unshift({ t: v, d: 'Ajouté à l’instant', done: false }); toast('Sujet de prière enregistré'); }
+      document.querySelector('.sheet-backdrop')?.remove();
+      if (state.screen === 'priere') refresh();
+      break;
+    }
+    case 'save-testimony': {
+      const v = document.getElementById('prayerInput')?.value.trim();
+      if (v) {
+        const initials = v.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        state.testimonies.unshift({ ini: initials || 'EK', name: 'Esther Kouassi', time: 'À l’instant · Témoignage', text: v, count: 0 });
+        toast('Témoignage publié pour tous les membres');
+      }
       document.querySelector('.sheet-backdrop')?.remove();
       if (state.screen === 'priere') refresh();
       break;
