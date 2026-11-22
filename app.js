@@ -198,7 +198,7 @@ screens.splash = () => `
   </div>`;
 
 screens.login = () => `
-  <div class="screen auth">
+  <div class="screen auth auth--login">
     <div class="auth__logo"><div class="alpha">α</div><h1>METANOÏA</h1></div>
     <div class="auth__intro">
       <h2>Bon retour parmi nous</h2>

@@ -823,3 +823,7 @@ html, body { height: 100%; overflow: hidden; background: var(--bg-0); }
   .app { left: 50%; right: auto; width: min(520px, 100%); transform: translateX(-50%); box-shadow: 0 0 0 1px var(--glass-line), 0 30px 90px rgba(0,0,0,.55); }
   body { background: radial-gradient(circle at 20% 10%, rgba(106,64,196,.28), transparent 40%), linear-gradient(150deg,#0A0516,#160B2E); }
 }
+
+/* Connexion : champs placés plus bas (inscription inchangée) */
+.auth--login .auth__logo { margin: 26px 0 46px; }
+.auth--login .auth__intro { margin-bottom: 62px; }
