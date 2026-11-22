@@ -44,7 +44,8 @@ const I = {
   eye: '<path d="M12 5c-6 0-10 7-10 7s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>',
   eyeoff: '<path d="M2.9 2.9 2 3.8l3.2 3.2A11 11 0 0 0 2 12s4 7 10 7a10 10 0 0 0 4.2-.9l3 3 .9-.9L2.9 2.9zM12 17a5 5 0 0 1-3.4-8.7l1.5 1.5A3 3 0 0 0 13.2 13l1.5 1.5A5 5 0 0 1 12 17zm8-5a12 12 0 0 1-1.7 3l-1.5-1.5A9 9 0 0 0 20 12c-1-1.6-4-5.3-8-5.3a8 8 0 0 0-2 .3L8.4 5.4A10 10 0 0 1 12 5c6 0 10 7 10 7z"/>',
   flame: '<path d="M13.5 2c.5 3-1 4.5-2.5 6-1.2 1.2-2 2.4-2 4 0 .8.2 1.5.6 2.1-.8-.3-1.5-1-1.9-1.9C6.3 14 6 15.3 6 16.6 6 20 9 23 12.5 23S19 20 19 16.6c0-4.2-2.6-6.4-4-8.6-.5 1-1.2 1.7-2 2 .3-2.7-.4-5.7-1.5-8z"/>',
-  testimony: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 15-4-4 1.4-1.4L11 14.2l5.6-5.6L18 10l-7 7z"/>'
+  testimony: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1 15-4-4 1.4-1.4L11 14.2l5.6-5.6L18 10l-7 7z"/>',
+  book: '<path d="M12 6c-3-2-6-2-9-1v14c3-1 6-1 9 1 3-2 6-2 9-1V5c-3-1-6-1-9 1zm0 0v14M6 9c1.5-.4 3-.3 4 .2M6 12c1.5-.4 3-.3 4 .2M14 9c1.5-.4 3-.3 4 .2M14 12c1.5-.4 3-.3 4 .2"/>'
 };
 
 const ico = (n, s = 20) => `<svg viewBox="0 0 24 24" width="${s}" height="${s}" fill="currentColor" aria-hidden="true">${I[n] || ''}</svg>`;
@@ -90,13 +91,27 @@ function ytThumb(id) { return 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
 function ytEmbed(id) { return 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0&modestbranding=1'; }
 function ytWatch(id) { return 'https://www.youtube.com/watch?v=' + id; }
 
+/* ------------------------------------------------------------------
+   BIBLE — versions disponibles (liens vers les textes officiels en ligne)
+   ------------------------------------------------------------------ */
+const BIBLE_VERSIONS = [
+  { n: 'Sainte Bible', code: 'LSG', desc: 'Traduction Louis Segond — française classique' },
+  { n: 'King James', code: 'KJV', desc: 'King James Version — anglaise' },
+  { n: 'Darby', code: 'DARBY', desc: 'Traduction Darby — française' },
+  { n: 'Parole Vivante', code: 'PV', desc: 'Traduction Parole Vivante — française' },
+  { n: 'Bible', code: 'NIV', desc: 'Version anglaise courante — New International Version' }
+];
+function bibleUrl(ref, code) {
+  return 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(ref) + '&version=' + code;
+}
+
 /* ---------------- État ---------------- */
 
 const state = {
   screen: 'splash',
   history: [],
   tab: 'accueil',
-  tabs: { notif: 'Toutes', agenda: 'À venir', sermons: 'Toutes', prayer: 'War Room', meditation: 'Plan annuel' },
+  tabs: { notif: 'Toutes', agenda: 'À venir', sermons: 'Toutes', prayer: 'War Room', meditation: 'Plan annuel', bible: 'Sainte Bible' },
   track: { prie: null, medite: null },
   streak: { prie: 12, medite: 8 },
   celebrated: [],
@@ -122,6 +137,7 @@ const state = {
   pay: 'momo',
   notifRead: false,
   showPassword: false,
+  bibleRef: 'Jean 3:16',
   currentUser: null,
   regSexe: '',
   regStatut: 'Membre'
@@ -177,6 +193,7 @@ const TABS = [
   { id: 'predications', label: 'Prédications', icon: 'sermon' },
   { id: 'priere', label: 'Prière', icon: 'prayer' },
   { id: 'meditation', label: 'Méditation', icon: 'bible' },
+  { id: 'bible', label: 'Bible', icon: 'book' },
   { id: 'don', label: 'Don', icon: 'gift' }
 ];
 
@@ -618,7 +635,7 @@ screens.meditation = () => `
         </div>
         <p class="tiny muted" style="margin:14px 0 0">Jour 324 sur 365</p>
       </div>
-      <div class="section-head"><h3>Lectures du jour</h3><span class="eyebrow" style="margin:0">VEN. 20 NOV.</span></div>
+      <div class="section-head"><h3>Lectures du jour</h3><button data-action="tab" data-id="bible">Lire la Bible ${ico('right',13)}</button></div>
       <div class="card stagger">
         ${[['Ézéchiel 40','Ancien Testament',false],['Ézéchiel 41','Ancien Testament',false],['1 Pierre 3','Nouveau Testament',true]]
           .map((r,i) => `<div class="reading"><span class="reading__tag ${r[2] ? 'reading__tag--nt' : ''}">${r[1]}</span><div class="reading__b"><b>${r[0]}</b><small>${r[1]}</small></div>${state.readings[i] ? `<span class="reading__check">${ico('check',17)}</span>` : `<button class="btn btn--small btn--outline" data-action="reading" data-i="${i}" style="min-height:32px;font-size:10px">Lu</button>`}</div>`).join('')}
@@ -640,6 +657,43 @@ screens.meditation = () => `
       <button class="btn btn--outline" data-action="toast" data-msg="Nouveau passage enregistré">${ico('plus',17)} Enregistrer un passage</button>
     `}
   </div>`;
+
+screens.bible = () => {
+  const version = BIBLE_VERSIONS.find(v => v.n === state.tabs.bible) || BIBLE_VERSIONS[0];
+  const ref = state.bibleRef || 'Jean 3:16';
+  return `
+  <div class="screen">
+    ${header('La Sainte Bible', { back: false, bell: true })}
+    ${chips('bible', BIBLE_VERSIONS.map(v => v.n))}
+    <div class="card stagger">
+      <p class="eyebrow">VERSION ${version.n.toUpperCase()}</p>
+      <p class="tiny muted" style="margin:0 0 14px">${version.desc}</p>
+      <div class="field" style="margin:0">
+        <label>Rechercher un passage</label>
+        <input class="input" id="bibleRef" value="${ref}" placeholder="Ex. Jean 3:16, Psaume 23" />
+      </div>
+      <button class="btn btn--primary" style="margin-top:14px" data-action="open-bible">${ico('book',17)} Lire le passage</button>
+    </div>
+
+    <div class="section-head"><h3>Lectures rapides</h3></div>
+    <div class="card stagger">
+      ${['Jean 3:16','Psaume 23','Proverbes 3:5-6','Romains 12:2','Matthieu 6:9-13','Philippiens 4:13']
+        .map(r => `<div class="row" data-action="quick-bible" data-ref="${r}">
+          <div class="row__ico">${ico('book',17)}</div>
+          <div class="row__body"><b>${r}</b><small>Ouvrir dans ${version.n}</small></div>
+          <span class="row__chev">${ico('right',16)}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="card stagger" style="border-left:3px solid var(--red)">
+      <b style="font-size:12px">Toutes les versions</b>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+        ${BIBLE_VERSIONS.map(v => `<button class="chip ${v.n === version.n ? 'active' : ''}" data-action="chip" data-group="bible" data-v="${v.n}">${v.n}</button>`).join('')}
+      </div>
+      <p class="tiny muted" style="margin:14px 0 0">Les textes s'ouvrent sur BibleGateway (connexion requise). La lecture est gratuite.</p>
+    </div>
+  </div>`;
+};
 
 screens.don = () => `
   <div class="screen">
@@ -911,6 +965,20 @@ document.addEventListener('click', e => {
       state.currentSermon = +el.dataset.i;
       navigate('lecteur');
       break;
+    case 'open-bible': {
+      const ref = (document.getElementById('bibleRef')?.value || '').trim() || 'Jean 3:16';
+      state.bibleRef = ref;
+      const v = BIBLE_VERSIONS.find(x => x.n === state.tabs.bible) || BIBLE_VERSIONS[0];
+      window.open(bibleUrl(ref, v.code), '_blank', 'noopener,noreferrer');
+      break;
+    }
+    case 'quick-bible': {
+      const ref = el.dataset.ref;
+      state.bibleRef = ref;
+      const v = BIBLE_VERSIONS.find(x => x.n === state.tabs.bible) || BIBLE_VERSIONS[0];
+      window.open(bibleUrl(ref, v.code), '_blank', 'noopener,noreferrer');
+      break;
+    }
     case 'back': goBack(); break;
     case 'tab': navigate(el.dataset.id, { replace: true }); break;
     case 'toast': toast(el.dataset.msg); break;
