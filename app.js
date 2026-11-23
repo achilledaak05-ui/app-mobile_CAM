@@ -236,26 +236,26 @@ const state = {
   tab: 'accueil',
   tabs: { notif: 'Toutes', agenda: 'À venir', sermons: 'Toutes', prayer: 'War Room', meditation: 'Plan annuel', bible: 'Sainte Bible' },
   track: { prie: null, medite: null },
-  streak: { prie: 12, medite: 8 },
+  streak: { prie: 0, medite: 0 },
   celebrated: [],
   subjects: [
     { t: 'Pour ma famille et la paix dans notre foyer', d: 'Ajouté le 2 nov.', done: false },
     { t: 'Sagesse pour mon nouveau projet professionnel', d: 'Ajouté le 9 nov.', done: false },
     { t: 'Pour la réussite de mes examens', d: 'Ajouté le 12 nov.', done: false },
-    { t: 'Que mes proches découvrent Christ', d: 'Ajouté le 18 nov.', done: true }
+    { t: 'Que mes proches découvrent Christ', d: 'Ajouté le 18 nov.', done: false }
   ],
   wall: [
-    { ini: 'AK', name: 'Aya K.', time: "Aujourd’hui · 08:12", text: 'Je confie à vos prières l’opération de ma maman prévue lundi. Que la main de DIEU guide les médecins.', count: 23 },
-    { ini: 'JM', name: 'Jean-Marc D.', time: 'Hier · 19:40', text: 'Priez pour notre groupe de jeunes : unité, zèle et persévérance pendant les jeûnes de décembre.', count: 41 },
-    { ini: 'SB', name: 'Sarah B.', time: '14 nov. · Prière exaucée', text: 'Merci à tous ceux qui ont prié pour mon emploi : j’ai signé mon contrat cette semaine !', count: 67 }
+    { ini: 'AK', name: 'Aya K.', time: "Aujourd’hui · 08:12", text: 'Je confie à vos prières l’opération de ma maman prévue lundi. Que la main de DIEU guide les médecins.', count: 0 },
+    { ini: 'JM', name: 'Jean-Marc D.', time: 'Hier · 19:40', text: 'Priez pour notre groupe de jeunes : unité, zèle et persévérance pendant les jeûnes de décembre.', count: 0 },
+    { ini: 'SB', name: 'Sarah B.', time: '14 nov. · Prière exaucée', text: 'Merci à tous ceux qui ont prié pour mon emploi : j’ai signé mon contrat cette semaine !', count: 0 }
   ],
   testimonies: [
-    { ini: 'NC', name: 'Nadège C.', time: "Aujourd’hui · 07:45", text: 'Après trois mois de recherche, DIEU m’a ouvert une porte inattendue. Je témoigne de sa fidélité : Il n’a jamais tardé.', count: 34 },
-    { ini: 'KB', name: 'Koffi B.', time: 'Hier · 18:20', text: 'Mon fils était malade, nous avons prié ensemble et le Seigneur l’a restauré. À Lui soit la gloire !', count: 58 },
-    { ini: 'AM', name: 'Aminata M.', time: '16 nov. · Témoignage', text: 'J’ai trouvé une nouvelle famille ici. Merci pour votre accueil et vos prières, ma vie a changé.', count: 72 }
+    { ini: 'NC', name: 'Nadège C.', time: "Aujourd’hui · 07:45", text: 'Après trois mois de recherche, DIEU m’a ouvert une porte inattendue. Je témoigne de sa fidélité : Il n’a jamais tardé.', count: 0 },
+    { ini: 'KB', name: 'Koffi B.', time: 'Hier · 18:20', text: 'Mon fils était malade, nous avons prié ensemble et le Seigneur l’a restauré. À Lui soit la gloire !', count: 0 },
+    { ini: 'AM', name: 'Aminata M.', time: '16 nov. · Témoignage', text: 'J’ai trouvé une nouvelle famille ici. Merci pour votre accueil et vos prières, ma vie a changé.', count: 0 }
   ],
   joined: [],
-  readings: [true, false, true],
+  readings: [false, false, false],
   amount: 25000,
   pay: 'momo',
   notifRead: false,
@@ -273,6 +273,7 @@ const state = {
 const USERS_KEY = 'metanoia_users';
 const SESSION_KEY = 'metanoia_session';
 const DATA_KEY = id => 'metanoia_data_' + id;
+const DATA_VERSION = 2; // incrémenté pour réinitialiser les compteurs
 
 function getUsers() {
   try { return JSON.parse(localStorage.getItem(USERS_KEY) || '[]'); }
@@ -299,7 +300,7 @@ function defaultUserData() {
 }
 function saveUserData() {
   if (!state.currentUser) return;
-  const data = {};
+  const data = { v: DATA_VERSION };
   USER_FIELDS.forEach(f => data[f] = state[f]);
   try { localStorage.setItem(DATA_KEY(state.currentUser.id), JSON.stringify(data)); } catch (e) {}
 }
@@ -307,7 +308,8 @@ function loadUserData(user) {
   let data = null;
   try { data = JSON.parse(localStorage.getItem(DATA_KEY(user.id)) || 'null'); } catch (e) {}
   const base = defaultUserData();
-  USER_FIELDS.forEach(f => { state[f] = (data && data[f] !== undefined) ? data[f] : base[f]; });
+  const valid = data && data.v === DATA_VERSION;
+  USER_FIELDS.forEach(f => { state[f] = (valid && data[f] !== undefined) ? data[f] : base[f]; });
 }
 function initials(u) {
   return ((u.prenoms || '').trim()[0] || '') + ((u.nom || '').trim()[0] || '') || 'MK';
@@ -484,7 +486,7 @@ screens.notifications = () => `
     ${header('Notifications', { back: true })}
     ${chips('notif', ['Toutes', 'Programmes', 'Informations', 'Prédications'])}
     <div class="card" style="display:flex;align-items:center;justify-content:space-between">
-      <b style="font-size:13px">${state.notifRead ? 'Tout est marqué comme lu' : '3 notifications non lues'}</b>
+      <b style="font-size:13px">${state.notifRead ? 'Tout est marqué comme lu' : '0 notification non lue'}</b>
       <button class="btn btn--small btn--outline" data-action="mark-read">Tout marquer comme lu</button>
     </div>
     <div class="card stagger">
@@ -692,7 +694,7 @@ screens.priere = () => {
   } else if (tab === 'Exaucements') {
     content = `
       <div class="answered-banner stagger">
-        <div class="answered-banner__n">4</div>
+        <div class="answered-banner__n">0</div>
         <div class="answered-banner__l">PRIÈRES EXAUCÉES</div>
         <div class="answered-banner__t">Une mémoire de la fidélité de DIEU dans votre vie.</div>
       </div>
@@ -756,9 +758,9 @@ screens.meditation = () => `
         <p class="eyebrow" style="margin-bottom:16px">PLAN DE LECTURE 2026</p>
         <div class="progress-ring">
           <svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"/><circle class="value" cx="60" cy="60" r="52"/></svg>
-          <div class="progress-ring__label"><b>86%</b><span>de la Bible lue</span></div>
+          <div class="progress-ring__label"><b>0%</b><span>de la Bible lue</span></div>
         </div>
-        <p class="tiny muted" style="margin:14px 0 0">Jour 324 sur 365</p>
+        <p class="tiny muted" style="margin:14px 0 0">Jour 0 sur 365</p>
       </div>
       <div class="section-head"><h3>Lectures du jour</h3><button data-action="tab" data-id="bible">Lire la Bible ${ico('right',13)}</button></div>
       <div class="card stagger">
@@ -768,14 +770,14 @@ screens.meditation = () => `
       </div>
       <div class="section-head"><h3>Ma régularité cette semaine</h3></div>
       <div class="card stagger">
-        <div class="week-dots">${['L','M','M','J','V','S','D'].map((d,i) => `<div><i class="${i < 4 ? 'on' : ''} ${i === 4 ? 'today' : ''}">${i < 4 ? '✓' : ''}</i><span>${d}</span></div>`).join('')}</div>
+        <div class="week-dots">${['L','M','M','J','V','S','D'].map((d,i) => `<div><i class="${false} ${i === 4 ? 'today' : ''}">${''}</i><span>${d}</span></div>`).join('')}</div>
       </div>
     ` : `
       <div class="calendar stagger">
         <div class="calendar__head"><button class="icon-btn" data-action="toast" data-msg="Mois précédent">${ico('left',16)}</button><b>Novembre 2026</b><button class="icon-btn" data-action="toast" data-msg="Mois suivant">${ico('right',16)}</button></div>
         <div class="calendar__grid">${['L','M','M','J','V','S','D'].map(d => `<div class="calendar__dow">${d}</div>`).join('')}${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30].map(d => `<div class="calendar__day ${d === 20 ? 'today' : ''}">${d}</div>`).join('')}</div>
       </div>
-      <div class="section-head"><h3>Vendredi 20 novembre</h3><span class="tiny muted">3 passages enregistrés</span></div>
+      <div class="section-head"><h3>Vendredi 20 novembre</h3><span class="tiny muted">0 passage enregistré</span></div>
       <div class="card stagger">
         ${[['Psaume 23','Lu à 06:30'],['Jean 15:1-17','Lu à 06:45'],['Proverbes 3','Lu à 21:10']].map(r => `<div class="reading"><div class="reading__b"><b>${r[0]}</b><small>${r[1]}</small></div><span class="reading__check">${ico('check',17)}</span></div>`).join('')}
       </div>

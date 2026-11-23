@@ -552,7 +552,7 @@ button { cursor: pointer; border: 0; background: none; color: inherit; }
 .progress-ring circle { fill: none; stroke-width: 8; }
 .progress-ring .track { stroke: rgba(255,255,255,.10); }
 .progress-ring .value { stroke: #B9A2EB; stroke-linecap: round; stroke-dasharray: 326.7; stroke-dashoffset: 326.7; animation: ringFill 1.6s var(--ease) .3s forwards; }
-@keyframes ringFill { to { stroke-dashoffset: 45.7; } }
+@keyframes ringFill { to { stroke-dashoffset: 326.7; } }
 .progress-ring__label { position: absolute; text-align: center; }
 .progress-ring__label b { font-size: 31px; font-weight: 800; color: #fff; display: block; line-height: 1; }
 .progress-ring__label span { font-size: 9px; color: var(--violet-soft); font-weight: 700; }
