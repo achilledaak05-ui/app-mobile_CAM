@@ -105,6 +105,99 @@ function bibleUrl(ref, code) {
   return 'https://www.biblegateway.com/passage/?search=' + encodeURIComponent(ref) + '&version=' + code;
 }
 
+/* Textes intégrés à l'application — lecture directe, sans internet */
+const BIBLE_TEXTS = {
+  'Jean 3:16': {
+    LSG: 'Dieu a tant aimé le monde qu’il a donné son Fils unique, afin que quiconque croit en lui ne périsse point, mais qu’il ait la vie éternelle.',
+    KJV: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.',
+    DARBY: 'Dieu a tellement aimé le monde, qu’il a donné son Fils unique, afin que quiconque croit en lui ne périsse pas, mais qu’il ait la vie éternelle.',
+    PV: 'Dieu a tellement aimé les hommes qu’il leur a donné son Fils. Maintenant, celui qui croit en lui ne sera jamais perdu : il vivra avec Dieu pour toujours.',
+    NIV: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.'
+  },
+  'Psaume 23:1': {
+    LSG: 'L’ÉTERNEL est mon berger : je ne manquerai de rien.',
+    KJV: 'The LORD is my shepherd; I shall not want.',
+    DARBY: 'L’Éternel est mon berger, je ne manquerai de rien.',
+    PV: 'Le Seigneur est comme un berger pour moi : il me donne tout ce dont j’ai besoin.',
+    NIV: 'The LORD is my shepherd, I lack nothing.'
+  },
+  'Proverbes 3:5-6': {
+    LSG: 'Confie-toi en l’ÉTERNEL de tout ton cœur, et ne t’appuie pas sur ta sagesse; reconnais-le dans toutes tes voies, et il aplanira tes sentiers.',
+    KJV: 'Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.',
+    DARBY: 'Confie-toi de tout ton cœur en l’Éternel, et ne t’appuie pas sur ton intelligence; reconnais-le dans toutes tes voies, et il redressera tes sentiers.',
+    PV: 'Fais confiance au Seigneur de tout ton cœur, ne compte pas seulement sur ta propre intelligence. Dans tout ce que tu fais, pense à lui, et lui-même montrera le chemin.',
+    NIV: 'Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.'
+  },
+  'Romains 12:2': {
+    LSG: 'Ne vous conformez pas au siècle présent, mais soyez transformés par le renouvellement de l’intelligence, afin que vous discerniez quelle est la volonté de Dieu, ce qui est bon, agréable et parfait.',
+    KJV: 'And be not conformed to this world: but be ye transformed by the renewing of your mind, that ye may prove what is that good, and acceptable, and perfect, will of God.',
+    DARBY: 'Ne vous conformez pas au présent siècle, mais soyez transformés par le renouvellement de votre intelligence, pour discerner quelle est la volonté de Dieu, ce qui est bon, agréable et parfait.',
+    PV: 'Ne laissez pas le monde vous façonner à son image. Laissez Dieu renouveler votre façon de penser : alors vous saurez reconnaître ce qu’il veut, ce qui est vraiment bien et qui lui plaît.',
+    NIV: 'Do not conform to the pattern of this world, but be transformed by the renewing of your mind. Then you will be able to test and approve what God’s will is—his good, pleasing and perfect will.'
+  },
+  'Matthieu 6:9-13': {
+    LSG: 'Notre Père qui es aux cieux ! Que ton nom soit sanctifié; que ton règne vienne; que ta volonté soit faite sur la terre comme au ciel. Donne-nous aujourd’hui notre pain quotidien; pardonne-nous nos offenses, comme nous pardonnons aussi à ceux qui nous ont offensés; et ne nous laisse pas entrer en tentation, mais délivre-nous du mal.',
+    KJV: 'Our Father which art in heaven, Hallowed be thy name. Thy kingdom come. Thy will be done in earth, as it is in heaven. Give us this day our daily bread. And forgive us our debts, as we forgive our debtors. And lead us not into temptation, but deliver us from evil.',
+    DARBY: 'Notre Père qui es dans les cieux, ton nom soit sanctifié; ton règne vienne; ta volonté soit faite, sur la terre comme au ciel. Donne-nous aujourd’hui notre pain quotidien; et pardonne-nous nos dettes, comme nous pardonnons aussi à nos débiteurs; et ne nous introduis pas dans la tentation, mais délivre-nous du mal.',
+    PV: 'Père céleste, que ton nom soit respecté comme il se doit. Que ton règne arrive, que ta volonté s’accomplisse ici-bas comme au ciel. Donne-nous aujourd’hui de quoi vivre. Pardonne-nous nos fautes comme nous pardonnons aux autres. Ne nous laisse pas face au mal, mais protège-nous.',
+    NIV: 'Our Father in heaven, hallowed be your name, your kingdom come, your will be done, on earth as it is in heaven. Give us today our daily bread. And forgive us our debts, as we also have forgiven our debtors. And lead us not into temptation, but deliver us from the evil one.'
+  },
+  'Philippiens 4:13': {
+    LSG: 'Je peux tout par la force qui me donne Christ.',
+    KJV: 'I can do all things through Christ which strengtheneth me.',
+    DARBY: 'Je peux toutes choses par Christ qui me fortifie.',
+    PV: 'Avec Christ qui me donne sa force, je peux affronter toutes choses.',
+    NIV: 'I can do all this through him who gives me strength.'
+  },
+  'Jean 1:1': {
+    LSG: 'Au commencement était la Parole, et la Parole était avec Dieu, et la Parole était Dieu.',
+    KJV: 'In the beginning was the Word, and the Word was with God, and the Word was God.',
+    DARBY: 'Au commencement était la Parole; et la Parole était avec Dieu, et la Parole était Dieu.',
+    PV: 'Au tout début existait déjà la Parole. Elle était avec Dieu, et elle était Dieu.',
+    NIV: 'In the beginning was the Word, and the Word was with God, and the Word was God.'
+  },
+  'Genèse 1:1': {
+    LSG: 'Au commencement, Dieu créa les cieux et la terre.',
+    KJV: 'In the beginning God created the heaven and the earth.',
+    DARBY: 'Au commencement, Dieu créa les cieux et la terre.',
+    PV: 'Au commencement, Dieu a fait le ciel et la terre.',
+    NIV: 'In the beginning God created the heavens and the earth.'
+  },
+  'Psaume 1:1': {
+    LSG: 'Heureux l’homme qui ne marche pas selon le conseil des méchants, qui ne s’arrête pas sur la voie des pécheurs, et qui ne s’assied pas en compagnie des moqueurs.',
+    KJV: 'Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful.',
+    DARBY: 'Bienheureux l’homme qui ne va pas selon le conseil des méchants, et qui ne s’arrête pas dans la voie des pécheurs, et qui ne s’assied pas dans le siège des moqueurs.',
+    PV: 'Heureux celui qui ne suit pas les conseils des méchants, qui ne traîne pas avec les pécheurs et qui ne rit pas avec les moqueurs.',
+    NIV: 'Blessed is the one who does not walk in step with the wicked or stand in the way that sinners take or sit in the company of mockers.'
+  },
+  '1 Corinthiens 13:4': {
+    LSG: 'La charité est patiente, elle est pleine de bonté; la charité n’est point jalouse, la charité ne se vante point, elle ne s’enfle point d’orgueil.',
+    KJV: 'Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up.',
+    DARBY: 'L’amour est patient, il est plein de bonté; l’amour n’est point jaloux; l’amour ne se vante point, il ne s’enfle point d’orgueil.',
+    PV: 'L’amour sait attendre, il est bon. L’amour n’est pas jaloux, il ne se vante pas, il ne se gonfle pas d’orgueil.',
+    NIV: 'Love is patient, love is kind. It does not envy, it does not boast, it is not proud.'
+  },
+  'Romains 8:28': {
+    LSG: 'Nous savons, du reste, que toutes choses concourent au bien de ceux qui aiment Dieu, de ceux qui sont appelés selon son dessein.',
+    KJV: 'And we know that all things work together for good to them that love God, to them who are the called according to his purpose.',
+    DARBY: 'Nous savons aussi que toutes choses concourent au bien de ceux qui aiment Dieu, de ceux qui sont appelés selon son dessein.',
+    PV: 'Nous le savons : dans tout ce qui arrive, Dieu agit pour le bien de ceux qui l’aiment, de ceux qu’il a appelés à suivre son plan.',
+    NIV: 'And we know that in all things God works for the good of those who love him, who have been called according to his purpose.'
+  },
+  'Isaïe 40:31': {
+    LSG: 'Mais ceux qui se confient en l’ÉTERNEL renouvellent leur force. Ils prennent le vol comme les aigles; ils courent, et ne se lassent point, ils marchent, et ne se fatiguent point.',
+    KJV: 'But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.',
+    DARBY: 'Mais ceux qui s’attendent à l’Éternel renouvelleront leur force; ils s’élèveront avec des ailes d’aigle; ils courront et ne se lasseront pas, ils marcheront et ne défailliront pas.',
+    PV: 'Ceux qui comptent sur le Seigneur retrouvent des forces. Ils s’envolent comme des aigles, ils courent sans s’épuiser, ils avancent sans s’affaiblir.',
+    NIV: 'but those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.'
+  }
+};
+
+function getBibleText(ref, code) {
+  const p = BIBLE_TEXTS[ref];
+  return p ? (p[code] || p.LSG || '') : '';
+}
+
 /* ---------------- État ---------------- */
 
 const state = {
@@ -661,28 +754,38 @@ screens.meditation = () => `
 screens.bible = () => {
   const version = BIBLE_VERSIONS.find(v => v.n === state.tabs.bible) || BIBLE_VERSIONS[0];
   const ref = state.bibleRef || 'Jean 3:16';
+  const text = getBibleText(ref, version.code);
   return `
   <div class="screen">
     ${header('La Sainte Bible', { back: false, bell: true })}
     ${chips('bible', BIBLE_VERSIONS.map(v => v.n))}
     <div class="card stagger">
       <p class="eyebrow">VERSION ${version.n.toUpperCase()}</p>
-      <p class="tiny muted" style="margin:0 0 14px">${version.desc}</p>
+      <p class="tiny muted" style="margin:0 0 14px">${version.desc} · Textes intégrés, lecture hors ligne</p>
       <div class="field" style="margin:0">
         <label>Rechercher un passage</label>
-        <input class="input" id="bibleRef" value="${ref}" placeholder="Ex. Jean 3:16, Psaume 23" />
+        <input class="input" id="bibleRef" value="${ref}" placeholder="Ex. Jean 3:16" />
       </div>
-      <button class="btn btn--primary" style="margin-top:14px" data-action="open-bible">${ico('book',17)} Lire le passage</button>
+      <button class="btn btn--primary" style="margin-top:14px" data-action="read-bible">${ico('book',17)} Lire le passage</button>
     </div>
+
+    ${text ? `
+    <div class="bible-reading stagger">
+      <div class="bible-reading__ref">${ref.toUpperCase()} · ${version.n.toUpperCase()}</div>
+      <div class="bible-reading__text">${text}</div>
+    </div>` : `
+    <div class="card stagger" style="border-left:3px solid var(--red)">
+      <b style="font-size:12px">Ce passage n’est pas encore intégré</b>
+      <p class="tiny muted" style="margin:6px 0 0">Choisissez un passage dans « Lectures rapides » ci-dessous.</p>
+    </div>`}
 
     <div class="section-head"><h3>Lectures rapides</h3></div>
     <div class="card stagger">
-      ${['Jean 3:16','Psaume 23','Proverbes 3:5-6','Romains 12:2','Matthieu 6:9-13','Philippiens 4:13']
-        .map(r => `<div class="row" data-action="quick-bible" data-ref="${r}">
-          <div class="row__ico">${ico('book',17)}</div>
-          <div class="row__body"><b>${r}</b><small>Ouvrir dans ${version.n}</small></div>
-          <span class="row__chev">${ico('right',16)}</span>
-        </div>`).join('')}
+      ${Object.keys(BIBLE_TEXTS).map(r => `<div class="row" data-action="quick-bible" data-ref="${r}">
+        <div class="row__ico">${ico('book',17)}</div>
+        <div class="row__body"><b>${r}</b><small>Lire dans ${version.n}</small></div>
+        <span class="row__chev">${ico('right',16)}</span>
+      </div>`).join('')}
     </div>
 
     <div class="card stagger" style="border-left:3px solid var(--red)">
@@ -690,7 +793,7 @@ screens.bible = () => {
       <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
         ${BIBLE_VERSIONS.map(v => `<button class="chip ${v.n === version.n ? 'active' : ''}" data-action="chip" data-group="bible" data-v="${v.n}">${v.n}</button>`).join('')}
       </div>
-      <p class="tiny muted" style="margin:14px 0 0">Les textes s'ouvrent sur BibleGateway (connexion requise). La lecture est gratuite.</p>
+      <p class="tiny muted" style="margin:14px 0 0">Les textes sont intégrés dans l’application : lecture directe, même sans internet.</p>
     </div>
   </div>`;
 };
@@ -965,18 +1068,20 @@ document.addEventListener('click', e => {
       state.currentSermon = +el.dataset.i;
       navigate('lecteur');
       break;
-    case 'open-bible': {
+    case 'read-bible': {
       const ref = (document.getElementById('bibleRef')?.value || '').trim() || 'Jean 3:16';
       state.bibleRef = ref;
-      const v = BIBLE_VERSIONS.find(x => x.n === state.tabs.bible) || BIBLE_VERSIONS[0];
-      window.open(bibleUrl(ref, v.code), '_blank', 'noopener,noreferrer');
+      refresh();
+      const zone = document.querySelector('.bible-reading');
+      if (!zone) toast('Ce passage n’est pas encore intégré à l’application');
+      else zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
       break;
     }
     case 'quick-bible': {
-      const ref = el.dataset.ref;
-      state.bibleRef = ref;
-      const v = BIBLE_VERSIONS.find(x => x.n === state.tabs.bible) || BIBLE_VERSIONS[0];
-      window.open(bibleUrl(ref, v.code), '_blank', 'noopener,noreferrer');
+      state.bibleRef = el.dataset.ref;
+      refresh();
+      const zone = document.querySelector('.bible-reading');
+      if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
       break;
     }
     case 'back': goBack(); break;
